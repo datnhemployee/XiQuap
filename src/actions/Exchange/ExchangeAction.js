@@ -48,50 +48,97 @@ class ExchangeAction {
 
 const actions = {
     // On
-    [ExchangeActionType.onInsertPost]: (
+    [ExchangeActionType.onInsertItem]: (
         callback = (res) => {},
         dispatch,
     ) => ExchangeAction.onDefinition(
-            ExchangeActionType.onInsertPost,
+            ExchangeActionType.onInsertItem,
             callback,
             dispatch,
     ),
-    [ExchangeActionType.onGetPost]: (
+    
+    [ExchangeActionType.onGetItem]: (
         callback = (res) => {},
         dispatch,
     ) => ExchangeAction.onDefinition(
-            ExchangeActionType.onGetPost,
+            ExchangeActionType.onGetItem,
+            callback,
+            dispatch,
+    ),
+
+    [ExchangeActionType.onGiveLike]: (
+        callback = (res) => {},
+        dispatch,
+    ) => ExchangeAction.onDefinition(
+        ExchangeActionType.onGiveLike,
+        callback,
+        dispatch, 
+    ),
+
+    [ExchangeActionType.onExchange]: (
+        callback = (res) => {},
+        dispatch,
+    ) => ExchangeAction.onDefinition(
+            ExchangeActionType.onExchange,
             callback,
             dispatch,
     ),
     
     // Emit
-    [ExchangeActionType.emitInsertPost]: (
+    [ExchangeActionType.emitInsertItem]: (
         data,
         pre = () => {},
         next = (res) => {},
         dispatch,
     ) => ExchangeAction.emitDefinition(
         data,
-        ExchangeActionType.emitInsertPost,
+        ExchangeActionType.emitInsertItem,
         pre,
         next,
         dispatch, 
     ),
-    [ExchangeActionType.emitGetPost]: (
+
+    [ExchangeActionType.emitGiveLike]: (
         data,
         pre = () => {},
         next = (res) => {},
         dispatch,
     ) => ExchangeAction.emitDefinition(
         data,
-        ExchangeActionType.emitGetPost,
+        ExchangeActionType.emitGiveLike,
         pre,
         next,
         dispatch, 
     ),
+
+    [ExchangeActionType.emitGetItem]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => ExchangeAction.emitDefinition(
+        data,
+        ExchangeActionType.emitGetItem,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [ExchangeActionType.emitExchange]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => ExchangeAction.emitDefinition(
+        data,
+        ExchangeActionType.emitExchange,
+        pre,
+        next,
+        dispatch, 
+    ),
+
     default: () => {},
 }
 
 
-export default AuthAction;
+export default ExchangeAction;

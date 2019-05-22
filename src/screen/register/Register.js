@@ -123,7 +123,7 @@ class Register extends Component {
 
   // Design
 
-  componentWillMount () {
+  componentDidMount () {
     let {
       navigateToHome,
       navigateToLogIn,

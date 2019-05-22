@@ -7,20 +7,30 @@ import Home from './home/Home';
 import AppContainerStyles from './AppContainer.styles';
 import Navigation from '../constant/Navigation';
 import NavigationAction from '../actions/NavigationAction';
-import { connect } from 'react-redux';
 import Register from './register/Register';
 import Post from './post/Post';
+import Exchange from './exchange/Exchange';
+import Info from './info/Info';
+import ChatBox from './chatBox/ChatBox';
+import Detail from './detail/Detail';
 
+import { connect } from 'react-redux';
 
 class AppContainer extends Component {
   constructor (props) {
     super(props);
     this.state = {
+      exchangingItem: null,
     };
     this.navigateToHome = this.navigateToHome.bind(this);
     this.navigateToLogIn = this.navigateToLogIn.bind(this);
     this.navigateToRegister = this.navigateToRegister.bind(this);
     this.navigateToPost = this.navigateToPost.bind(this);
+    this.navigateToChatBox = this.navigateToChatBox.bind(this);
+    this.navigateToInfo = this.navigateToPost.bind(this);
+    this.navigateToDetail = this.navigateToDetail.bind(this);
+    this.navigateToExchange = this.navigateToExchange.bind(this);
+    this.navigateToMessenger = this.navigateToMessenger.bind(this);
   }
 
   navigateToPost () {
@@ -37,6 +47,30 @@ class AppContainer extends Component {
 
   navigateToRegister () {
     this.action.navigate(Navigation.register);
+  }
+
+  navigateToChatBox () {
+    this.action.navigate(Navigation.chatBox);
+  }
+
+  navigateToExchange (item) {
+    this.setState({
+      exchangingItem: item,
+    })
+    console.log(` đây nè `)
+    this.action.navigate(Navigation.exchange);
+  }
+
+  navigateToDetail () {
+    this.action.navigate(Navigation.detail);
+  }
+
+  navigateToInfo () {
+    this.action.navigate(Navigation.info);
+  }
+
+  navigateToMessenger () {
+    this.action.navigate(Navigation.messenger);
   }
 
   get action () {
@@ -85,6 +119,9 @@ class AppContainer extends Component {
         visible={navigation === Navigation.home}
         navigateToLogIn={this.navigateToLogIn}
         navigateToPost={this.navigateToPost}
+        navigateToDetail={this.navigateToDetail}
+        navigateToInfo={this.navigateToInfo}
+        navigateToExchange = {this.navigateToExchange}
         />
     );
   }
@@ -102,7 +139,7 @@ class AppContainer extends Component {
     );
   }
 
-  get register () {
+  get registerScreen () {
     let {
       navigation,
     } = this.dependencies;
@@ -118,6 +155,67 @@ class AppContainer extends Component {
     );
   }
 
+  get exchangeScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <Exchange 
+        style={AppContainerStyles}
+        visible={navigation === Navigation.exchange}
+        item = {this.state.exchangingItem}
+        navigateToHome={this.navigateToHome}
+        navigateToInfo={this.navigateToInfo}
+        />
+    );
+  }
+
+  get infoScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <Info 
+        style={AppContainerStyles}
+        visible={navigation === Navigation.register}
+        navigateToHome={this.navigateToHome}
+        navigateToChatBox={this.navigateToChatBox}
+        navigateToPost={this.navigateToPost}
+        />
+    );
+  }
+
+  get chatBoxScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <ChatBox 
+        style={AppContainerStyles}
+        visible={navigation === Navigation.register}
+        navigateToHome={this.navigateToHome}
+        navigateToInfo={this.navigateToInfo}
+        />
+    );
+  }
+
+  get detailScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      
+      <Detail 
+        style={AppContainerStyles}
+        visible={navigation === Navigation.detail}
+        navigateToHome={this.navigateToHome}
+        navigateToInfo={this.navigateToInfo}
+        navigateToDetail={this.navigateToDetail}
+        navigateToChatBox={this.navigateToChatBox}
+        />
+    );
+  }
+
   render() {
     let {
     } = this.dependencies;
@@ -126,7 +224,10 @@ class AppContainer extends Component {
       <View style={AppContainerStyles}>
         {this.logInScreen}
         {this.homeScreen} 
-        {this.register}
+        {this.registerScreen}
+        {this.postScreen}
+        {this.exchangeScreen}
+        {this.detailScreen}
       </View>
     );
   }

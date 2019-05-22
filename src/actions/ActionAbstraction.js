@@ -1,5 +1,5 @@
 import { Codes } from '../constant/Response';
-import MessageBox from '../component/MessageBox';
+import MessageBox from '../components/MessageBox';
 
 const defaultActions = () => {}
 
@@ -72,8 +72,6 @@ export default class ActionAbstraction {
         service.on(
             type,(res)=>{
 
-        
-
                 if(res.code === Codes.Success) {
                     dispatch({
                         type: type,
@@ -85,8 +83,8 @@ export default class ActionAbstraction {
                         error: true,
                         payload: res.content,
                     })
+                    MessageBox(res.content);
                 }
-                MessageBox(res.content);
                 callback(res);
             }); 
     }

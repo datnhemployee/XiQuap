@@ -4,9 +4,13 @@
  */
 
 export default {
-    onInsertPost: 'insert-item',
-    emitInsertPost: 'insert-item',
+    onInsertItem: 'insert-item',
+    emitInsertItem: 'insert-item',
+    onGiveLike: 'give-like',
+    onExchange: 'exchange',
 
-    onGetPost: 'get-item',
-    emitGetPost: 'get-item',
+    onGetItem: 'get-items',
+    emitGetItem: 'get-items',
+    emitGiveLike: 'give-like',
+    emitExchange: 'exchange',
 } 

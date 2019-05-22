@@ -104,7 +104,7 @@ class LogIn extends Component {
     }
   }
 
-  componentWillMount () {
+  componentDidMount () {
     let {
       navigateToHome,
     } = this.action;

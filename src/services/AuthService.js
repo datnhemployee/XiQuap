@@ -10,7 +10,53 @@ import AuthDocument from './API/AuthDocument';
 import AuthActionType from '../actions/Auth/AuthActionType';
 import LocalStorage from '../storage/LocalStorage';
 
-export const actions = {
+
+export default class AuthService {
+    constructor () {}
+    
+    static on (name,callback = (res) => {}) {
+        let action = actions[name];
+        if(!action){
+            return actions.default();
+        }
+        return action(callback);
+    } 
+
+    static emit (name,data,pre = () => {},next = (res) => {}) {
+        let action = actions[name];
+        if(!action){
+            return actions.default();
+        }
+        return action(
+            data,
+            pre,
+            next,
+        );
+    } 
+
+    static validateRegister (userForRegister) {
+        let result = AuthService.validateLogIn(userForRegister);
+        return !!result ?
+            result:
+            !userForRegister.email ?
+            `yêu cầu nhập email.`:
+            !userForRegister.phone ?
+            `yêu cầu nhập số điện thoại.`:
+            undefined;
+    }
+
+    static validateLogIn(userForLogIn) {
+        return !userForLogIn ?
+                `Phát hiện đăng nhập với giá trị rỗng.`:
+            !userForLogIn.username?
+                `Yêu cầu nhập vào tên tài khoản.`:
+            !userForLogIn.password?
+                `Yêu cầu nhập vào mật khẩu.`:
+                undefined;
+    }
+    
+}
+const actions = {
     // On
     [AuthActionType.onTokenLogIn]: (
         callback = (res)=> {},
@@ -34,7 +80,7 @@ export const actions = {
         on(AuthDocument.onLogIn,(res) => {
             if(res.code === Codes.Success){
                 LocalStorage.setToken(
-                    res.content,
+                    res.content.token,
                     () => {
                         callback(res);
                     }
@@ -203,48 +249,6 @@ export const actions = {
     default: () => {}
 }
 
-export default class AuthService {
-    constructor () {}
-    
-    static on (name,callback = (res) => {}) {
-        let action = actions[name];
-        if(!action){
-            return actions.default();
-        }
-        return action(callback);
-    } 
-
-    static emit (name,data,pre = () => {},next = (res) => {}) {
-        let action = actions[name];
-        if(!action){
-            return actions.default();
-        }
-        return action(
-            data,
-            pre,
-            next,
-        );
-    } 
-
-    static validateRegister (userForRegister) {
-        let result = AuthService.validateLogIn(userForRegister);
-        return !!result ?
-            result:
-            !userForRegister.email ?
-            `yêu cầu nhập email.`:
-            !userForRegister.phone ?
-            `yêu cầu nhập số điện thoại.`:
-            undefined;
-    }
-
-    static validateLogIn(userForLogIn) {
-        return !userForLogIn ?
-                `Phát hiện đăng nhập với giá trị rỗng.`:
-            !userForLogIn.username?
-                `Yêu cầu nhập vào tên tài khoản.`:
-            !userForLogIn.password?
-                `Yêu cầu nhập vào mật khẩu.`:
-                undefined;
-    }
-    
-}
+export {
+    actions
+};

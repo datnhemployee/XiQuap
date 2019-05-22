@@ -1,10 +1,11 @@
 import ExchangeActionType from "../actions/Exchange/ExchangeActionType";
 
 const initialState = {
+    list: [],
 }
 
 const usecases = {
-    [ExchangeActionType.emitInsertPost]: (
+    [ExchangeActionType.emitInsertItem]: (
         state,
         actionResult) => {
 
@@ -17,7 +18,7 @@ const usecases = {
             ...state,
         }
     },
-    [ExchangeActionType.emitGetPost]: (
+    [ExchangeActionType.emitGetItem]: (
         state,
         actionResult) => {
 
@@ -30,7 +31,22 @@ const usecases = {
             ...state,
         }
     },
-    [ExchangeActionType.onInsertPost]: (
+
+    [ExchangeActionType.emitGiveLike]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
+
+    [ExchangeActionType.onGetItem]: (
         state,
         actionResult) => {
 
@@ -43,13 +59,35 @@ const usecases = {
             error: actionResult.payload,
         }
     },
-    [ExchangeActionType.onGetPost]: (
+    [ExchangeActionType.onInsertItem]: (
         state,
         actionResult) => {
 
         if(!actionResult.error) {
             return {
                 ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [ExchangeActionType.onGiveLike]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
+            return {
+                list: state.list.map((val,index)=>{
+                    console.log(`state.list.${index} = ${JSON.stringify(state.list[index])}`)
+                    if(val._id === actionResult.payload._id){
+                        return {
+                            ...val,
+                            ...actionResult.payload,
+                        }
+                    }
+                    return val;
+                }),
             }
         } 
         return {
@@ -67,8 +105,8 @@ export default function (
     state = initialState,
     actionResult,
 ) {
-    console.log(`ActionResult nè: ${JSON.stringify(actionResult)}`)
-    console.log(`ActionResult nè: ${JSON.stringify(usecases[actionResult.type])}`)
+    // console.log(`ActionResult nè: ${JSON.stringify(actionResult)}`)
+    // console.log(`ActionResult nè: ${JSON.stringify(usecases[actionResult.type])}`)
 
     const usecase = usecases[actionResult.type];
     if(!!usecase){

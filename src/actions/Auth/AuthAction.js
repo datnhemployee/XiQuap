@@ -40,7 +40,7 @@ class AuthAction {
     }
 
     static on (name) {
-        console.log(`resAct: ${actions[name]}`);
+        // console.log(`resAct: ${actions[name]}`);
 
         return ActionAbstraction.on(name,actions);
     }

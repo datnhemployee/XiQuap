@@ -8,24 +8,51 @@ import {
 } from './Service';
 import PostDocument from './API/PostDocument';
 import ExchangeType from '../actions/Exchange/ExchangeActionType';
+import MessageBox from '../components/MessageBox';
+import LocalStorage from '../storage/LocalStorage';
 
 export const actions = {
     // On
-    [ExchangeType.onInsertPost]: (
+    [ExchangeType.onInsertItem]: (
         callback = (res)=> {},
     ) => {
-        on(PostDocument.onInsertPost,(res) => {
+        on(PostDocument.onInsertItem,(res) => {
+            if(res.code === Codes.Success){
+                MessageBox(`Đăng thành công`)
+            } else {
+                MessageBox(`Đăng thất bại: ${res.content}`)
+            }
+            callback(res);
+        });
+    },
+    [ExchangeType.onGetItem]: (
+        callback = (res)=> {},
+    ) => {
+        on(PostDocument.onGetItem,(res) => {
             if(res.code === Codes.Success){
                 
             } else {
                 
             }
+            callback(res);
         });
     },
-    [ExchangeType.onGetPost]: (
+    [ExchangeType.onGiveLike]: (
         callback = (res)=> {},
     ) => {
-        on(PostDocument.onGetPost,(res) => {
+        on(PostDocument.onGiveLike,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
+    [ExchangeType.onExchange]: (
+        callback = (res)=> {},
+    ) => {
+        on(PostDocument.onExchange,(res) => {
             if(res.code === Codes.Success){
                 
             } else {
@@ -37,7 +64,7 @@ export const actions = {
     
 
     // Emit
-    [ExchangeType.emitInsertPost]: (
+    [ExchangeType.emitInsertItem]: (
         {
             ownerName,
             name,
@@ -50,14 +77,18 @@ export const actions = {
     ) => {
         pre();
 
-        const constrainst = !name ? 
+        const constrainst = !ownerName ?
+            `Phải đính kèm tên chủ bài đăng.`:
+            !name ? 
             `Chưa ghi tên vật phẩm.`:
-            typeName ?
+            !typeName ?
             `Chưa chọn tên loại vật phẩm`:
+            !token ?
+            `Phải đính kèm token`:
             undefined;
 
         if(!constrainst){
-            emit(PostDocument.emitInsertPost,
+            emit(PostDocument.emitInsertItem,
                 {
                     ownerName,
                     name,
@@ -77,8 +108,9 @@ export const actions = {
             })
         }
     },
-    [ExchangeType.emitGetPost]: (
+    [ExchangeType.emitGetItem]: (
         {
+            page,
             token,
         },
         pre = () => {},
@@ -89,9 +121,76 @@ export const actions = {
         const constrainst = undefined;
 
         if(!constrainst){
-            emit(PostDocument.emitGetPost,
+            emit(PostDocument.emitGetItem,
+                {
+                    page,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [ExchangeType.emitGiveLike]: (
+        {
+            _id,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(PostDocument.emitGiveLike,
+                {
+                    _id,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [ExchangeType.emitExchange]: (
+        {
+            token,
+            _id,
+            photoUrl,
+            name,
+            description
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(PostDocument.emitExchange,
                 {
                     token,
+                    _id,
+                    photoUrl,
+                    name,
+                    description
                 }
             );
             next ({

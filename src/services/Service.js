@@ -10,7 +10,7 @@ const emit = (
 const on = (name,callback = (res)=>{}) => {
     console.log(`name nè: ${name}`)
     socket.on(name, (res) => {
-        console.log(`name nè: ${JSON.stringify(res)}`);
+        console.log(`on nè: ${JSON.stringify(res)}`);
         callback(res);
     });
 }
