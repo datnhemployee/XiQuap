@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import {
   View, 
+  ViewPagerAndroid,
+  Modal,
+  TouchableOpacity,
+  Text,
 } from 'react-native';
 import LogIn from './logIn/LogIn';
 import Home from './home/Home';
@@ -13,8 +17,12 @@ import Exchange from './exchange/Exchange';
 import Info from './info/Info';
 import ChatBox from './chatBox/ChatBox';
 import Detail from './detail/Detail';
+import Stock from './stock/Stock';
 
 import { connect } from 'react-redux';
+import socket from '../../Configuration';
+import LocalStorage from '../storage/LocalStorage';
+import MessageBox from '../components/MessageBox';
 
 class AppContainer extends Component {
   constructor (props) {
@@ -30,9 +38,19 @@ class AppContainer extends Component {
     this.navigateToDetail = this.navigateToDetail.bind(this);
     this.navigateToExchange = this.navigateToExchange.bind(this);
     this.navigateToMessenger = this.navigateToMessenger.bind(this);
+    this.navigateToStock = this.navigateToStock.bind(this);
+    this.onNavigateAtHome = this.onNavigateAtHome.bind(this);
   }
 
   componentDidMount () {
+    socket.on('disconnect', (reason) => {
+      LocalStorage.setToken('',() => {
+        MessageBox(` Mất kết nối máy chủ. Đăng nhập lại.`);
+        this.navigateToLogIn();
+        socket.close();
+        // socket.connect();
+      });
+    })
   }
 
   navigateToPost () {
@@ -41,6 +59,7 @@ class AppContainer extends Component {
 
   navigateToHome () {
     this.action.navigate(Navigation.home);
+    !!this.refHomeScreen ? this.refHomeScreen.setPage(0):undefined;
   }
 
   navigateToLogIn () {
@@ -70,6 +89,23 @@ class AppContainer extends Component {
 
   navigateToMessenger () {
     this.action.navigate(Navigation.messenger);
+  }
+
+  navigateToStock () {
+    this.action.navigate(Navigation.stock);
+    !!this.refHomeScreen ? this.refHomeScreen.setPage(1):undefined;
+  }
+
+  onNavigateAtHome (page) {
+    let pageIndex = {
+      0: () => this.navigateToHome(),
+      1: () => this.navigateToStock(),
+      default: () => this.navigateToHome(),
+    }
+
+    let navigateAction = pageIndex[page];
+    return !navigateAction ? pageIndex.default():
+      navigateAction();
   }
 
   get action () {
@@ -108,20 +144,125 @@ class AppContainer extends Component {
     );
   }
 
-  get homeScreen () {
+  navigationIcon (
+    visible,
+    content,
+    navigate = () => console.log(` Vừa bấm chuyển màn hình `)) {
+    
+    return (
+      <TouchableOpacity 
+        style={[
+          AppContainerStyles,
+          visible?{
+            borderBottomColor: 'green',
+            borderBottomWidth: 1,
+          }:{}]}
+          onPress={navigate}>
+        <Text style={[
+          AppContainerStyles,
+          visible?{
+            color: 'green',
+          }:{}]}>{content}</Text>
+      </TouchableOpacity>
+    )
+  }
+
+  get navigationHomeIcon () {
     let {
       navigation,
     } = this.dependencies;
+
+    let visible = navigation === Navigation.home;
+    return this.navigationIcon(
+      visible,
+      ` Màn hình chính `,
+      this.navigateToHome
+    );
+  } 
+
+  get navigationStockIcon () {
+    let {
+      navigation,
+    } = this.dependencies;
+
+    let visible = navigation === Navigation.stock;
+    return this.navigationIcon(
+      visible,
+      ` Quà tặng `,
+      this.navigateToStock
+    );
+  } 
+  
+  get navigationBar () {
+    return (
+      <View 
+      style={AppContainerStyles}>
+        {this.navigationHomeIcon}
+        {this.navigationStockIcon}
+      </View>
+    );
+  }
+
+  get homeForm () {
     return (
       <Home 
+        // key = "ViewPagerAndroid_Home"
         style={AppContainerStyles}
-        visible={navigation === Navigation.home}
         navigateToLogIn={this.navigateToLogIn}
         navigateToPost={this.navigateToPost}
         navigateToDetail={this.navigateToDetail}
         navigateToInfo={this.navigateToInfo}
         navigateToExchange = {this.navigateToExchange}
         />
+    );
+  }
+
+  get stockForm () {
+    return (
+      <Stock 
+        // key = "ViewPagerAndroid_Home"
+        style={AppContainerStyles}
+        navigateToLogIn={this.navigateToLogIn}
+        navigateToPost={this.navigateToPost}
+        navigateToDetail={this.navigateToDetail}
+        navigateToInfo={this.navigateToInfo}
+        navigateToExchange = {this.navigateToExchange}
+        />);
+  }
+
+  get homeScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <Modal
+        animationType="fade"
+        transparent={false}
+        visible={(navigation === Navigation.home)
+          || (navigation === Navigation.stock)}
+        onRequestClose={()=>{}}>
+        <View 
+          style={AppContainerStyles}>
+          {this.navigationBar}
+          <ViewPagerAndroid 
+            style={{flex: 8}}
+            initialPage={0}
+            ref = {(refHomeScreen) => this.refHomeScreen = refHomeScreen}
+            onPageSelected = {(e) => {this.onNavigateAtHome(e.nativeEvent.position)}}>
+              <View 
+                key = "ViewPagerAndroid_Home"
+                style={AppContainerStyles}>
+                {this.homeForm}
+              </View>
+              <View 
+                key = "ViewPagerAndroid_Stock"
+                style={AppContainerStyles}>
+                {this.stockForm}
+              </View>
+          </ViewPagerAndroid>
+        </View>
+      </Modal>
+      
     );
   }
 

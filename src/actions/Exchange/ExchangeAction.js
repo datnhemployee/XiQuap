@@ -41,7 +41,6 @@ class ExchangeAction {
     }
 
     static on (name) {
-
         return ActionAbstraction.on(name,actions);
     }
 }
@@ -89,6 +88,14 @@ const actions = {
         dispatch,
     ) => ExchangeAction.onDefinition(
             ExchangeActionType.onGetItem,
+            callback,
+            dispatch,
+    ),
+    [ExchangeActionType.onApproveItem]: (
+        callback = (res) => {},
+        dispatch,
+    ) => ExchangeAction.onDefinition(
+            ExchangeActionType.onApproveItem,
             callback,
             dispatch,
     ),
@@ -154,6 +161,19 @@ const actions = {
     ) => ExchangeAction.emitDefinition(
         data,
         ExchangeActionType.emitGetItem,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [ExchangeActionType.emitApproveItem]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => ExchangeAction.emitDefinition(
+        data,
+        ExchangeActionType.emitApproveItem,
         pre,
         next,
         dispatch, 

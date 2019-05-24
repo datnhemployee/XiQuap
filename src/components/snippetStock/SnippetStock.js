@@ -7,12 +7,8 @@ import {
   Image,
 } from 'react-native';
 import {ImageSize} from '../../constant/Image';
-import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
-import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 
-import { connect } from 'react-redux';
-
-class ExchangeCard extends Component {
+export default class SnippetStock extends Component {
   constructor (props) {
     super(props);
     
@@ -23,30 +19,26 @@ class ExchangeCard extends Component {
   approve () {
     let {
       approve,
-      navigateToHome,
     } = this.action;
 
     let {
       id,
       token,
-      idItem,
+      itemId,
     } = this.dependencies;
     approve({
-      _idApproved: id, // Id của mục trao đổi
+      itemId: id, // Id của mục trao đổi
       token,
-      _id: idItem, // Id của bài viết
-    },()=>{},
-    (res)=>{navigateToHome()});
+      _id: itemId, // Id của bài viết
+    });
   }
 
   get action () {
     let {
       approve = () => {console.log(`Vừa bấm đồng ý trao đổi`)},
-      navigateToHome = () => {console.log(`Vừa bấm chuyển sang màn hình Home`)},
     } = this.props;
     return {
       approve,
-      navigateToHome,
     }
   }
 
@@ -58,10 +50,10 @@ class ExchangeCard extends Component {
       id = '',
       description = '',
       photoUrl = '',
-      vendeeName = '',
-      idItem = '',
+      type = '',
 
-      token = '',
+      point = 0,
+
     } = this.props;
     return {
       height,
@@ -70,10 +62,8 @@ class ExchangeCard extends Component {
       name,
       description,
       photoUrl,
-      vendeeName,
-      idItem,
 
-      token,
+      point,
     };
   }
 
@@ -100,7 +90,6 @@ class ExchangeCard extends Component {
       description,
       vendeeName,
     } = this.dependencies;
-    // console.log(`ExchangeCard label: ${JSON.stringify(this.dependencies)}`)
 
     return {
       name: (<Text style={{flex: 1,borderWidth: 1}}>{name}</Text>),
@@ -126,7 +115,7 @@ class ExchangeCard extends Component {
       vendee: (
         <TouchableOpacity 
           style={{flex: 1,borderWidth: 1}}
-          onPress={()=>{}}
+          onPress={()=>{this.detailButton_onClick()}}
           >
           {this.label.vendeeName}
         </TouchableOpacity>
@@ -134,7 +123,7 @@ class ExchangeCard extends Component {
       approve: (
         <TouchableOpacity 
           style={{flex: 1,borderWidth: 1}}
-          onPress={()=>{this.approve()}}
+          onPress={()=>{this.likeButton_onClick()}}
           >
           <Text>Đồng ý</Text>
         </TouchableOpacity>
@@ -149,7 +138,7 @@ class ExchangeCard extends Component {
   get body () {
     return (
     <View style={{flex: 1,borderWidth: 1}}>
-      {this.button.vendee}
+      {this.button.vendeeName}
       {this.label.name}
       {this.label.description}
       {this.button.approve}
@@ -181,38 +170,3 @@ class ExchangeCard extends Component {
     );
   }
 }
-
-
-const mapStateToProps = (state) => {
-  // console.log(`state chỗ Home ${JSON.stringify(state.post.list)}`)
-
-  return {
-    token: state.auth.token,
-  }
-}
-
-const mapDispatchToProps = (dispatch) => ({
-  
-  approve: (
-    data,
-    pre = () => {},
-    next = (res) => {},
-  ) => dispatch(
-    ExchangeAction.emit(
-        ExchangeActionType.emitApproveItem,
-      ).inject(
-        data,
-        pre,
-        next
-      ),
-  ),
-
-  // Chỉ có thể emit ở component
-  // on sẽ ở screen
-
-})
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ExchangeCard);

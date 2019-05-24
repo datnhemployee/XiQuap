@@ -47,6 +47,13 @@ class Exchange extends Component {
 
   }
 
+  renew () {
+    this.setState({
+      name: ``,
+      description: ``,
+    })
+  }
+
   get action () {
     let {
       navigateToHome = () => console.log(` Vừa nhấn nút chuyển sang màn hình chính.`),
@@ -101,7 +108,7 @@ class Exchange extends Component {
 
     onExchange((res) => {
       if(res.code === Codes.Success){
-        this.refresh();
+        this.renew();
       }
     });
   }
@@ -132,11 +139,12 @@ class Exchange extends Component {
       name,
     } = this.dependencies;
 
+    let isNull = !item._id;
     return {
-      nameOfOwner: (<Text >{!item?` Lỗi `:item.ownerName}</Text>),
-      name: (<Text >{!item?` Lỗi `:item.name}</Text>),
-      description: (<Text >{!item?` Lỗi `:item.description}</Text>),
-      totalLike: (<Text >{!item?` Lỗi `:item.totalLike}</Text>),
+      nameOfOwner: (<Text >{isNull?` Lỗi `:item.owner.name}</Text>),
+      name: (<Text >{isNull?` Lỗi `:item.name}</Text>),
+      description: (<Text >{isNull?` Lỗi `:item.description}</Text>),
+      totalLike: (<Text >{isNull?` Lỗi `:item.totalLike}</Text>),
       nameOfVendee: (<Text >{name}</Text>),
     }
   }

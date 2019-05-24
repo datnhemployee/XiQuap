@@ -25,23 +25,23 @@ class Detail extends Component {
     this.onCardPostExchangeClick = this.onCardPostExchangeClick.bind(this);
   }
 
-  giveLike (id) {
-    let {
-      giveLike,
-    } = this.action;
+  // giveLike (id) {
+  //   let {
+  //     giveLike,
+  //   } = this.action;
 
-    giveLike({
-      _id: id,
-      token,
-    })
-  }
+  //   giveLike({
+  //     _id: id,
+  //     token,
+  //   })
+  // }
 
   get action () {
     let {
       navigateToHome = () => console.log(` Vừa bấm chuyển sang màn hình chính.`),
       navigateToExchange = () => console.log(` Vừa bấm chuyển sang màn hình trao đổi .`),
 
-      giveLike = () => console.log(` Vừa bấm thích vật phẩm .`),
+      // giveLike = () => console.log(` Vừa bấm thích vật phẩm .`),
       onGiveLike = () => console.log(` Đang chờ thông tin like từ máy chủ .`),
       onGetItem = () => console.log(` Đang chờ vật phẩm từ máy chủ .`),
       onExchange = () => console.log(` Đang chờ thông tin trao đổi từ máy chủ .`),
@@ -51,7 +51,7 @@ class Detail extends Component {
       navigateToHome,
       navigateToExchange,
 
-      giveLike,
+      // giveLike,
       onGiveLike,
       onGetItem,
       onExchange,
@@ -107,11 +107,13 @@ class Detail extends Component {
     } = this.dependencies;
 
     return {
-      vendeeTotalStar:(<Text >{item.vendeeTotalStar} sao</Text>),
-      vendeeName: !!item.vendeeName? 
-        (<Text > Đã chấp nhận {item.vendeeName}</Text>)
+      vendeeTotalStar:!!item.vendee? 
+        (<Text >{item.vendee.totalStar} sao</Text>)
+        :(<Text > Lỗi khi tìm sao </Text>),
+      vendeeName: !!item.vendee? 
+        (<Text > Đã chấp nhận {item.vendee.name}</Text>)
         :(<Text > Chưa chấp nhận </Text>),
-      vendeeGiveStar: !!item.vendeeGiveStar? 
+      vendeeGiveStar: !!item.giveStar? 
         (<Text > Được 1 sao </Text>)
         :(<Text > Chưa tặng sao </Text>),
     }
@@ -131,7 +133,11 @@ class Detail extends Component {
       item,
     } = this.dependencies;
 
-    console.log(`onGetPost_vendeeName item: ${JSON.stringify(item)}`)
+    let {
+      navigateToHome
+    } = this.action;
+
+    // console.log(`onGetPost_vendeeName item: ${JSON.stringify(item)}`)
 
     return {
       exchange: (
@@ -139,15 +145,17 @@ class Detail extends Component {
         data={!item ? []: item.itemList}
         renderItem = {(element) => {
           element = element.item;
-          console.log(`onGetPost_vendeeName element: ${JSON.stringify(element)}`)
+          // console.log(`onGetPost_vendeeName element: ${JSON.stringify(element)}`)
 
           return (
             <ExchangeCard 
               id = {element._id}
+              idItem = {item._id}
               name = {element.name}
               description = {element.description}
               photoUrl = {element.photoUrl}
               vendeeName = {element.vendee.name}
+              navigateToHome = {navigateToHome}
             />
           )
         }}
@@ -176,16 +184,18 @@ class Detail extends Component {
   get header () {
     let item = this.dependencies.item;
 
+    // console.log(`item header ${JSON.stringify(item)}`);
     return (
       <View>
         {this.button.back}
-        {!!item?  <CardPost
+        {(!item._id)? <Text >Thông tin rỗng </Text>
+        :<CardPost
             height = {500}
 
             id = { item._id}
-            ownerId = {item.ownerId}
-            ownerName = {!item.ownerName}
-            ownerAvatar = {item.ownerAvatar}
+            ownerId = {item.owner._id}
+            ownerName = {item.owner.name}
+            ownerAvatar = {item.owner.avatar}
             mainPicture = {item.mainPicture}
             name = {item.name}
             description = {item.description}
@@ -194,7 +204,7 @@ class Detail extends Component {
 
             navigateToExchange = {this.onCardPostExchangeClick}
             navigateToDetail = {() => {}}
-          />:<Text >Thông tin rỗng </Text>}
+          />}
       </View>  
     )}
   get body () {
@@ -242,7 +252,7 @@ class Detail extends Component {
 
 
 const mapStateToProps = (state) => {
-  console.log(`state Detail: ${JSON.stringify(state)}`);
+  // console.log(`state Detail: ${JSON.stringify(state)}`);
 
   return {
     token: state.auth.token,
@@ -251,19 +261,19 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  giveLike: (
-    data,
-    pre = () => {},
-    next = (res) => {},
-  ) => dispatch(
-    ExchangeAction.emit(
-        ExchangeActionType.emitGiveLike,
-      ).inject(
-        data,
-        pre,
-        next
-      ),
-  ),
+  // giveLike: (
+  //   data,
+  //   pre = () => {},
+  //   next = (res) => {},
+  // ) => dispatch(
+  //   ExchangeAction.emit(
+  //       ExchangeActionType.emitGiveLike,
+  //     ).inject(
+  //       data,
+  //       pre,
+  //       next
+  //     ),
+  // ),
 
   onGiveLike: (
     callback = (res)=>{},

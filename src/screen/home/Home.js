@@ -53,6 +53,7 @@ class Home extends Component {
       onGetMore = () => {},
       onGiveLike = () => {},
       onExchange = () => {},
+      onApproved = () => {},
     } = this.props;
     return {
       navigateToPost,
@@ -65,6 +66,7 @@ class Home extends Component {
       onGetMore,
       onGiveLike,
       onExchange,
+      onApproved,
     }
   }
 
@@ -73,6 +75,7 @@ class Home extends Component {
       onGetMore,
       onGiveLike,
       onExchange,
+      onApproved,
     } = this.action;
 
     this.onRefresh();
@@ -131,6 +134,28 @@ class Home extends Component {
         
       }
     })
+
+    onApproved ((res) => {
+      if (res.code === Codes.Success) {
+        
+        console.log(` Trả về cho người dùng ${JSON.stringify(res)}`)
+        console.log(` state.list ${JSON.stringify(this.state.list)}`)
+
+        let temp = this.dependencies.post;
+        console.log(` temp ${JSON.stringify(temp)}`)
+
+        let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
+        console.log(` foundPostIndex ${JSON.stringify(foundPostIndex)}`)
+
+        if (foundPostIndex != -1) {
+          this.state.list.splice(foundPostIndex - 1,1);
+        console.log(` state after${JSON.stringify(this.state.list)}`)
+
+          this.setState({list: this.state.list.slice()});
+        }
+        
+      }
+    })
   }
 
   onRefresh () {
@@ -145,14 +170,12 @@ class Home extends Component {
 
   get dependencies () {
     let {
-      visible = false,
       post = [],
       token,
     } = this.props;
     // console.log(`dependencies chỗ Home ${JSON.stringify(list)}`)
 
     return {
-      visible,
       post,
       token,
     };
@@ -179,9 +202,7 @@ class Home extends Component {
   }
   get header () {
     return (
-    <View
-      style={{flex: 1}}
-    >
+    <View style={{flex: 1}}>
       {this.button.post}
     </View>)
   }
@@ -192,7 +213,7 @@ class Home extends Component {
       navigateToDetail,
     } = this.action;
     return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 8}}>
       <FlatList
         data = {this.state.list}
         renderItem = {({item}) => {
@@ -204,9 +225,9 @@ class Home extends Component {
             height = {500}
 
             id = {item._id}
-            ownerId = {item.ownerId}
-            ownerName = {item.ownerName}
-            ownerAvatar = {item.ownerAvatar}
+            ownerId = {item.owner._id}
+            ownerName = {item.owner.name}
+            ownerAvatar = {item.owner.avatar}
             mainPicture = {item.mainPicture}
             name = {item.name}
             description = {item.description}
@@ -241,20 +262,7 @@ class Home extends Component {
   }
 
   render() {
-    let {
-      visible,
-    } = this.dependencies;
-
-    return (
-      <Modal
-        animationType="fade"
-        transparent={false}
-        visible={visible}
-        onRequestClose={()=>{}}
-        >
-        {this.form}
-      </Modal>
-    );
+    return this.form;
   }
 }
 
@@ -308,6 +316,15 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     ExchangeAction.on(
       ExchangeActionType.onExchange,
+    ).inject(
+      callback
+    )
+  ),
+  onApproved: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onApproveItem,
     ).inject(
       callback
     )

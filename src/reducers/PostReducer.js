@@ -73,6 +73,19 @@ const usecases = {
             ...state,
         }
     },
+    [ExchangeActionType.emitApproveItem]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
 
     // on
 
@@ -173,6 +186,19 @@ const usecases = {
                 ...actionResult.payload,
             })}`)
 
+            return {
+                ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [ExchangeActionType.onApproveItem]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
             return {
                 ...actionResult.payload,
             }

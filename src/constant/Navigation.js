@@ -8,4 +8,5 @@ export default {
     detail: 7,
     exchange: 8,
     messenger: 9,
+    stock: 10,
 }

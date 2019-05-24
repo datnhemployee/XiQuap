@@ -61,10 +61,11 @@ class Post extends Component {
       onInsertItem,
       navigateToHome,
     } = this.action;
-    onInsertItem(
-      (res) => {
-        // console.log(`Vừa đăng: ${JSON.stringify(res)}`);
-        navigateToHome();
+        console.log(`Vừa đăng: ${JSON.stringify(navigateToHome)}`);
+      onInsertItem(
+        (res) => {
+          console.log(`Vừa đăng: ${JSON.stringify(res)}`);
+          navigateToHome();
       }
     )
   }

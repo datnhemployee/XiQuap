@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { 
   noBlankSpace, 
 } from '../../helpers/StringHelper';
+import socket from '../../../Configuration';
 
 class LogIn extends Component {
   constructor (props) {
@@ -22,9 +23,7 @@ class LogIn extends Component {
     
   }
   /**
-   * ==================================================================
    * Logic
-   * ==================================================================
    */
   get initialState () {
     return {
@@ -62,7 +61,7 @@ class LogIn extends Component {
       // password: this.state.password,
       username: `admin123`,
       password: `admin123`,
-    },() => {},
+    },() => {socket.connect()},
     (res) => {
       if(res.code === Codes.Success) {
         success();

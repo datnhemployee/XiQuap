@@ -9,12 +9,14 @@ export default {
     onExchange: 'exchange',
     onGetItems: 'get-items',
     onGetItem: 'get-item',
+    onApproveItem: 'approve',
 
     emitInsertItem: 'insert-item',
     emitGiveLike: 'give-like',
     emitExchange: 'exchange',
     emitGetItems: 'get-items',
     emitGetItem: 'get-item',
+    emitApproveItem: 'approve',
 
 } 
 

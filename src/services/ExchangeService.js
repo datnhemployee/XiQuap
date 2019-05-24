@@ -73,6 +73,18 @@ export const actions = {
             callback(res);
         });
     },
+    [ExchangeType.onApproveItem]: (
+        callback = (res)=> {},
+    ) => {
+        on(PostDocument.onApproveItem,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
     
 
     // Emit
@@ -239,6 +251,44 @@ export const actions = {
                     token,
                     _id,
                     option,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [ExchangeType.emitApproveItem]: (
+        {
+            token,
+            _id,
+            _idApproved,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = !_id ?
+            ` Không tìm thấy Mã bài viết.`:
+            !_id ?
+            ` Không tìm thấy token.`:
+            !_idApproved ?
+            ` Không tìm thấy Mã chấp nhận.`:
+            undefined;
+
+        if(!constrainst){
+            emit(PostDocument.emitApproveItem,
+                {
+                    token,
+                    _id,
+                    _idApproved,
                 }
             );
             next ({

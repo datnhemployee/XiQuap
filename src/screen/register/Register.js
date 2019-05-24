@@ -51,7 +51,7 @@ class Register extends Component {
       email: `oodatnhoemployeeoo@gmail.com`,
       phone: `0939083581`,
       intro: `uit`,
-    },() => {},
+    },() => {socket.connect()},
     (res) => {
       if(res.code === Codes.Success) {
         success();

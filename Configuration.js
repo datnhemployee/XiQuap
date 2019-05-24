@@ -5,8 +5,9 @@ import io from 'socket.io-client/dist/socket.io';
 const connectionConfig = {
     jsonp: false,
     reconnection: true,
-    reconnectionDelay: 100,
-    reconnectionAttempts: 5000,
+    reconnectionDelay: 0,
+    reconnectionDelayMax: 0,
+    reconnectionAttempts: Infinity,
     transports: ['websocket']/// you need to explicitly tell it to use websockets
   };
   
@@ -21,8 +22,6 @@ socket.on('connect', () => {
     // console.log('connected ' + JSON.stringify(socket.emit('deleted',['asas'])));
 })
 
-socket.on('disconnect', (reason) => {
-    console.log('disconnected because '+ reason);
-})
+
 // socket.open();
 export default socket;

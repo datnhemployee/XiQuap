@@ -112,6 +112,7 @@ const actions = {
     [AuthActionType.onRegister]: (
         callback = (res)=> {},
     ) => {
+
         on(AuthDocument.onRegister,(res) => {
 
             if(res.code === Codes.Success){
