@@ -93,8 +93,8 @@ export default function (
     state = initialState,
     actionResult,
 ) {
-    console.log(`ActionResult nè: ${JSON.stringify(actionResult)}`)
-    console.log(`ActionResult nè: ${JSON.stringify(usecases[actionResult.type])}`)
+    // console.log(`ActionResult nè: ${JSON.stringify(actionResult)}`)
+    // console.log(`ActionResult nè: ${JSON.stringify(usecases[actionResult.type])}`)
 
     const usecase = usecases[actionResult.type];
     if(!!usecase){

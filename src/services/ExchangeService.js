@@ -25,10 +25,10 @@ export const actions = {
             callback(res);
         });
     },
-    [ExchangeType.onGetItem]: (
+    [ExchangeType.onGetItemByPage]: (
         callback = (res)=> {},
     ) => {
-        on(PostDocument.onGetItem,(res) => {
+        on(PostDocument.onGetItems,(res) => {
             if(res.code === Codes.Success){
                 
             } else {
@@ -53,6 +53,18 @@ export const actions = {
         callback = (res)=> {},
     ) => {
         on(PostDocument.onExchange,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
+    [ExchangeType.onGetItem]: (
+        callback = (res)=> {},
+    ) => {
+        on(PostDocument.onGetItem,(res) => {
             if(res.code === Codes.Success){
                 
             } else {
@@ -108,7 +120,7 @@ export const actions = {
             })
         }
     },
-    [ExchangeType.emitGetItem]: (
+    [ExchangeType.emitGetItemByPage]: (
         {
             page,
             token,
@@ -121,7 +133,7 @@ export const actions = {
         const constrainst = undefined;
 
         if(!constrainst){
-            emit(PostDocument.emitGetItem,
+            emit(PostDocument.emitGetItems,
                 {
                     page,
                     token,
@@ -181,7 +193,9 @@ export const actions = {
     ) => {
         pre();
 
-        const constrainst = undefined;
+        const constrainst = !name ?
+            ` Không tìm thấy tên của vật phẩm.`:
+            undefined;
 
         if(!constrainst){
             emit(PostDocument.emitExchange,
@@ -204,7 +218,40 @@ export const actions = {
             })
         }
     },
+    [ExchangeType.emitGetItem]: (
+        {
+            token,
+            _id,
+            option,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
 
+        const constrainst = !_id ?
+            ` Không tìm thấy Mã bài viết.`:
+            undefined;
+
+        if(!constrainst){
+            emit(PostDocument.emitGetItem,
+                {
+                    token,
+                    _id,
+                    option,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
     default: () => {}
 }
 

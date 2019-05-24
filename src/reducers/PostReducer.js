@@ -18,7 +18,7 @@ const usecases = {
             ...state,
         }
     },
-    [ExchangeActionType.emitGetItem]: (
+    [ExchangeActionType.emitGetItemByPage]: (
         state,
         actionResult) => {
 
@@ -46,7 +46,37 @@ const usecases = {
         }
     },
 
-    [ExchangeActionType.onGetItem]: (
+    [ExchangeActionType.emitExchange]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
+
+    [ExchangeActionType.emitGetItem]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
+
+    // on
+
+    [ExchangeActionType.onGetItemByPage]: (
         state,
         actionResult) => {
 
@@ -77,17 +107,74 @@ const usecases = {
         actionResult) => {
 
         if(!actionResult.error) {
+            // return {
+            //     list: state.list.map((val,index)=>{
+            //         console.log(`state.list.${index} = ${JSON.stringify(state.list[index])}`)
+            //         if(val._id === actionResult.payload._id){
+            //             return {
+            //                 ...val,
+            //                 ...actionResult.payload,
+            //             }
+            //         }
+            //         return val;
+            //     }),
+            // }
             return {
-                list: state.list.map((val,index)=>{
-                    console.log(`state.list.${index} = ${JSON.stringify(state.list[index])}`)
-                    if(val._id === actionResult.payload._id){
-                        return {
-                            ...val,
-                            ...actionResult.payload,
-                        }
-                    }
-                    return val;
-                }),
+                ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [ExchangeActionType.onExchange]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
+            // return {
+            //     list: state.list.map((val,index)=>{
+            //         console.log(`state.list.${index} = ${JSON.stringify(state.list[index])}`)
+            //         if(val._id === actionResult.payload._id){
+            //             return {
+            //                 ...val,
+            //                 ...actionResult.payload,
+            //             }
+            //         }
+            //         return val;
+            //     }),
+            // }
+            return {
+                ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [ExchangeActionType.onGetItem]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
+            // return {
+            //     list: state.list.map((val,index)=>{
+            //         console.log(`state.list.${index} = ${JSON.stringify(state.list[index])}`)
+            //         if(val._id === actionResult.payload._id){
+            //             return {
+            //                 ...val,
+            //                 ...actionResult.payload,
+            //             }
+            //         }
+            //         return val;
+            //     }),
+            // }
+            console.log(`onGetPost_vendeeName actionResult: ${JSON.stringify({
+                ...actionResult.payload,
+            })}`)
+
+            return {
+                ...actionResult.payload,
             }
         } 
         return {

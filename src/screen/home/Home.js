@@ -21,15 +21,12 @@ class Home extends Component {
     super(props);
     this.state = {
       refreshing: false,
-      page: 0,
-      posts: [],
+      amount: 0,
+      list: [],
     }
 
     this.onEndReached = this.onEndReached.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
-    this.onCardPostClick = this.onCardPostClick.bind(this);
-    this.onCardPostLikeClick = this.onCardPostLikeClick.bind(this);
-    this.onCardPostExchangeClick = this.onCardPostExchangeClick.bind(this);
   }
 
   getMore() {
@@ -38,24 +35,10 @@ class Home extends Component {
     } = this.action;
     LocalStorage.getToken((token)=>{
       getMore({
-        page: this.state.page,
+        page: Math.floor((this.state.amount / 5)),
         token: token,
       });
     })
-  }
-
-  giveLike (id) {
-    let {
-      giveLike,
-    } = this.action;
-
-    let {
-      token,
-    } = this.dependencies;
-    giveLike({
-      _id: id,
-      token,
-    });
   }
 
   get action () {
@@ -68,7 +51,6 @@ class Home extends Component {
       
       getMore = () => {console.log(`Đang lấy thêm dữ liệu`)},
       onGetMore = () => {},
-      giveLike = () => {},
       onGiveLike = () => {},
       onExchange = () => {},
     } = this.props;
@@ -81,7 +63,6 @@ class Home extends Component {
 
       getMore,
       onGetMore,
-      giveLike,
       onGiveLike,
       onExchange,
     }
@@ -96,13 +77,18 @@ class Home extends Component {
 
     this.onRefresh();
     onGetMore((res)=>{
+
       if (res.code===Codes.Success){
-        // console.log(`Đã lấy thêm được ${JSON.stringify(this.dependencies.posts.slice())}`)
-        let temp = this.dependencies.posts.slice();
-        temp = [...this.state.posts,...temp];
+        let temp = this.state.list.slice();
+          temp.splice(
+            Math.floor(this.state.list.length / 5) * 5,
+            this.state.list.length % 5,
+          );
+        temp = temp.concat(this.dependencies.post.list);
+        console.log(`length: ${temp.length}`)
         this.setState({
-          posts: temp,
-          page: this.state.page + 1,
+          list: temp.slice(),
+          amount: temp.length,
         });
         // MessageBox(`Lấy thêm dữ liệu thành công`);
       } else {
@@ -112,43 +98,39 @@ class Home extends Component {
 
     onGiveLike ((res) => {
       if (res.code === Codes.Success) {
-        temp = this.dependencies.posts.slice();
-        this.setState({
-          posts: temp,
-          page: this.state.page + 1,
-        });
+        
+        let temp = this.dependencies.post;
+
+        let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
+        if (foundPostIndex != -1) {
+          let returnList = this.state.list.slice();
+          returnList[foundPostIndex] = temp;
+
+          this.setState({
+            list: returnList.slice(),
+          });
+        }
+        
       }
     })
 
     onExchange ((res) => {
       if (res.code === Codes.Success) {
-        temp = this.dependencies.posts.slice();
-        this.setState({
-          posts: temp,
-          page: this.state.page + 1,
-        });
+        
+        let temp = this.dependencies.post;
+
+        let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
+        if (foundPostIndex != -1) {
+          let returnList = this.state.list.slice();
+          returnList[foundPostIndex] = temp;
+
+          this.setState({
+            list: returnList.slice(),
+          });
+        }
+        
       }
     })
-  }
-
-  onCardPostExchangeClick (item) {
-    let {
-      navigateToExchange,
-    } = this.action;
-
-    navigateToExchange(item);
-  }
-
-  onCardPostLikeClick (id) {
-    this.giveLike(id);
-  }
-
-  onCardPostClick (item) {
-    let {
-      navigateToDetail, 
-    } = this.props;
-
-    navigateToDetail(item);
   }
 
   onRefresh () {
@@ -164,14 +146,14 @@ class Home extends Component {
   get dependencies () {
     let {
       visible = false,
-      posts = [],
+      post = [],
       token,
     } = this.props;
-    // console.log(`dependencies chỗ Home ${JSON.stringify(posts)}`)
+    // console.log(`dependencies chỗ Home ${JSON.stringify(list)}`)
 
     return {
       visible,
-      posts,
+      post,
       token,
     };
   }
@@ -205,13 +187,17 @@ class Home extends Component {
   }
 
   get body () {
+    let {
+      navigateToExchange,
+      navigateToDetail,
+    } = this.action;
     return (
     <View style={{flex: 1}}>
       <FlatList
-        data = {this.state.posts}
+        data = {this.state.list}
         renderItem = {({item}) => {
           
-          console.log(`cardPost ${JSON.stringify(item)}`)
+          // console.log(`cardPost ${JSON.stringify(item)}`)
 
           return (
           <CardPost
@@ -227,9 +213,8 @@ class Home extends Component {
             totalLike = {item.totalLike}
             totalItem = {item.totalItem}
 
-            giveLike = {this.onCardPostLikeClick}
-            navigateToExchange = {this.onCardPostExchangeClick}
-            navigateToDetail = {this.onCardPostClick}
+            navigateToExchange = {navigateToExchange}
+            navigateToDetail = {navigateToDetail}
           />)
         }}
         showsVerticalScrollIndicator = {false}
@@ -237,7 +222,7 @@ class Home extends Component {
         onRefresh = {this.onRefresh}
         onEndReached = {this.onEndReached}
         onEndReachedThreshold={0.5}
-        keyExtractor={(item,index)=>`PostIndex${item.ownerId}`}
+        keyExtractor={(item,index)=>`PostIndex${index}`}
       />
     </View>)
   }
@@ -279,7 +264,7 @@ const mapStateToProps = (state) => {
 
   return {
     token: state.auth.token,
-    posts: state.post.list,
+    post: state.post,
   }
 }
 
@@ -290,45 +275,21 @@ const mapDispatchToProps = (dispatch) => ({
     next = (res) => {},
   ) => dispatch(
     ExchangeAction.emit(
-        ExchangeActionType.emitGetItem,
+        ExchangeActionType.emitGetItemByPage,
       ).inject(
         data,
         pre,
         next
       ),
   ),
-  giveLike: (
-    data,
-    pre = () => {},
-    next = (res) => {},
-  ) => dispatch(
-    ExchangeAction.emit(
-        ExchangeActionType.emitGiveLike,
-      ).inject(
-        data,
-        pre,
-        next
-      ),
-  ),
-  exchange: (
-    data,
-    pre = () => {},
-    next = (res) => {},
-  ) => dispatch(
-    ExchangeAction.emit(
-        ExchangeActionType.emitExchange,
-      ).inject(
-        data,
-        pre,
-        next
-      ),
-  ),
+  
+  
 
   onGetMore: (
     callback = (res)=>{},
   ) => dispatch(
     ExchangeAction.on(
-      ExchangeActionType.onGetItem,
+      ExchangeActionType.onGetItemByPage,
     ).inject(
       callback
     )

@@ -5,41 +5,57 @@ import {
   Modal,
   TouchableOpacity,
   FlatList,
+  ScrollView,
 } from 'react-native';
+import CardPost from '../../components/card/CardPost';
+import ExchangeCard from '../../components/exchangeCard/ExchangeCard';
+
+import { Codes } from '../../constant/Response';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
+import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
+
+import { connect } from 'react-redux';
 
 class Detail extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      item: null,
     }
+    this.onBackButtonClick = this.onBackButtonClick.bind(this);
+    this.onCardPostExchangeClick = this.onCardPostExchangeClick.bind(this);
+  }
+
+  giveLike (id) {
+    let {
+      giveLike,
+    } = this.action;
+
+    giveLike({
+      _id: id,
+      token,
+    })
   }
 
   get action () {
     let {
       navigateToHome = () => console.log(` Vừa bấm chuyển sang màn hình chính.`),
       navigateToExchange = () => console.log(` Vừa bấm chuyển sang màn hình trao đổi .`),
+
       giveLike = () => console.log(` Vừa bấm thích vật phẩm .`),
-      onGiveLike = () => {},
+      onGiveLike = () => console.log(` Đang chờ thông tin like từ máy chủ .`),
+      onGetItem = () => console.log(` Đang chờ vật phẩm từ máy chủ .`),
+      onExchange = () => console.log(` Đang chờ thông tin trao đổi từ máy chủ .`),
       
     } = this.props;
     return {
       navigateToHome,
       navigateToExchange,
+
       giveLike,
       onGiveLike,
+      onGetItem,
+      onExchange,
     };
-  }
-
-  componentDidMount () {
-    let {
-      onGiveLike,
-    } = this.action;
-
-    onGiveLike((res) => {
-      this.setState({})
-    })
   }
 
   get dependencies () {
@@ -53,122 +69,156 @@ class Detail extends Component {
     };
   }
 
+  componentDidMount () {
+    let {
+      onGiveLike,
+      onGetItem,
+      onExchange,
+    } = this.action;
+
+    onGiveLike((res) => {
+      if(res.code === Codes.Success){
+        this.refresh();
+      }
+    });
+
+    onGetItem((res) => {
+      if(res.code === Codes.Success){
+        this.refresh();
+      }
+    });
+
+    onExchange((res) => {
+      if(res.code === Codes.Success){
+        this.refresh();
+      }
+    });
+  }
+
+  // Render
+
+  refresh () {
+    this.setState({});
+  }
+
   get label () {
-    let item = this.state.item;
+    let {
+      item,
+    } = this.dependencies;
+
     return {
-      ownerName: (<Text >@{!item? ` Lỗi `:item.ownerName}</Text>),
-      name: (<Text >{!item? ` Lỗi `:item.name}</Text>),
-      description: (<Text >{!item? ` Lỗi `:item.description}</Text>),
-      ownerName: (<Text >{!item? ` Lỗi `:item.ownerName}</Text>),
-      vendeeTotalStar: !!item? (!!item.vendeeId? 
-        (<Text >{item.vendeeGiveStar}</Text>)
-        :(<View/>))
-        :(<View/>),
-      vendeeName: !!item? (!!item.vendeeId? 
-        (<Text >Đã đồng ý với {item.vendeeName}</Text>)
-        :(<View/>))
-        :(<View/>),
-      vendeeGiveStar: !!item? (!!item.vendeeGiveStar? 
+      vendeeTotalStar:(<Text >{item.vendeeTotalStar} sao</Text>),
+      vendeeName: !!item.vendeeName? 
+        (<Text > Đã chấp nhận {item.vendeeName}</Text>)
+        :(<Text > Chưa chấp nhận </Text>),
+      vendeeGiveStar: !!item.vendeeGiveStar? 
         (<Text > Được 1 sao </Text>)
-        :(<Text > Không được tặng sao </Text>))
-        :(<View/>),
-      totalLike: !!item? (<Text > {item.totalLike} lượt thích </Text>)
-        :(<View/>),
-      totalItem: !!item? (<Text > {item.totalItem} chờ trao đổi </Text>)
-        :(<View/>),
+        :(<Text > Chưa tặng sao </Text>),
     }
   }
 
   get button () {
     return {
-      back: (<TouchableOpacity >
+      back: (<TouchableOpacity 
+        onPress = {this.onBackButtonClick}>
         <Text>Trở lại</Text>
       </TouchableOpacity>),
     }
   }
 
   get list () {
+    let {
+      item,
+    } = this.dependencies;
+
+    console.log(`onGetPost_vendeeName item: ${JSON.stringify(item)}`)
+
     return {
       exchange: (
       <FlatList 
-        data={this.state.post.itemList}
+        data={!item ? []: item.itemList}
+        renderItem = {(element) => {
+          element = element.item;
+          console.log(`onGetPost_vendeeName element: ${JSON.stringify(element)}`)
+
+          return (
+            <ExchangeCard 
+              id = {element._id}
+              name = {element.name}
+              description = {element.description}
+              photoUrl = {element.photoUrl}
+              vendeeName = {element.vendee.name}
+            />
+          )
+        }}
+        refreshing = {false}
+        keyExtractor = {(item,index) => `DetailListExchangeItem${index}`}
       />)
     }
   }
 
-  onCardPostExchangeClick (item) {
+  onBackButtonClick () {
+    let {
+      navigateToHome,
+    } = this.action;
+
+    navigateToHome();
+  }
+
+  onCardPostExchangeClick () {
     let {
       navigateToExchange,
     } = this.action;
 
-    navigateToExchange(item);
-  }
-
-  onCardPostLikeClick (id) {
-    this.giveLike(id);
-  }
-
-  onCardPostClick (item) {
-    let {
-      navigateToDetail, 
-    } = this.props;
-
-    navigateToDetail(item);
+    navigateToExchange();
   }
 
   get header () {
-    let {
-      _id,
-      ownerId,
-      ownerName,
-      mainPicture,
-      name,
-      description,
-      totalLike,
-      totalItem,
-    } = this.dependencies.item;
+    let item = this.dependencies.item;
 
     return (
       <View>
         {this.button.back}
-        <CardPost
+        {!!item?  <CardPost
             height = {500}
 
-            id = {_id}
-            ownerId = {ownerId}
-            ownerName = {ownerName}
-            ownerAvatar = {ownerAvatar}
-            mainPicture = {mainPicture}
-            name = {name}
-            description = {description}
-            totalLike = {totalLike}
-            totalItem = {totalItem}
+            id = { item._id}
+            ownerId = {item.ownerId}
+            ownerName = {!item.ownerName}
+            ownerAvatar = {item.ownerAvatar}
+            mainPicture = {item.mainPicture}
+            name = {item.name}
+            description = {item.description}
+            totalLike = {item.totalLike}
+            totalItem = {item.totalItem}
 
-            giveLike = {this.onCardPostLikeClick}
             navigateToExchange = {this.onCardPostExchangeClick}
-            navigateToDetail = {this.onCardPostClick}
-          />
+            navigateToDetail = {() => {}}
+          />:<Text >Thông tin rỗng </Text>}
       </View>  
     )}
   get body () {
     return (
       <View  style={{flex: 1}}>
-        {this.list.exchange}
+        {this.label.vendeeName}
+        {this.label.vendeeGiveStar}
+        {this.label.vendeeTotalStar}
       </View>
     )}
   get footer () {
     return (
       <View  style={{flex: 1}}>
-        {this.button.like}
-        {this.button.exchange}
+        {this.list.exchange}
       </View>
     )}
   
   get form () {
     return (
-      <View style={{flex: 1}}>
-        <Text > Detail screen </Text>
-      </View>
+      <ScrollView style={{flex: 1}}>
+        {this.header}
+        {this.body}
+        {this.footer}
+      </ScrollView>
     )
   }
 
@@ -192,11 +242,11 @@ class Detail extends Component {
 
 
 const mapStateToProps = (state) => {
-  // console.log(`state chỗ Home ${JSON.stringify(state.post.list)}`)
+  console.log(`state Detail: ${JSON.stringify(state)}`);
 
   return {
     token: state.auth.token,
-    posts: state.post.list,
+    item: state.post,
   }
 }
 
@@ -220,6 +270,26 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     ExchangeAction.on(
       ExchangeActionType.onGiveLike,
+    ).inject(
+      callback
+    )
+  ),
+
+  onExchange: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onExchange,
+    ).inject(
+      callback
+    )
+  ),
+
+  onGetItem: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onGetItem,
     ).inject(
       callback
     )

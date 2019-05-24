@@ -57,11 +57,11 @@ const actions = {
             dispatch,
     ),
     
-    [ExchangeActionType.onGetItem]: (
+    [ExchangeActionType.onGetItemByPage]: (
         callback = (res) => {},
         dispatch,
     ) => ExchangeAction.onDefinition(
-            ExchangeActionType.onGetItem,
+            ExchangeActionType.onGetItemByPage,
             callback,
             dispatch,
     ),
@@ -80,6 +80,15 @@ const actions = {
         dispatch,
     ) => ExchangeAction.onDefinition(
             ExchangeActionType.onExchange,
+            callback,
+            dispatch,
+    ),
+
+    [ExchangeActionType.onGetItem]: (
+        callback = (res) => {},
+        dispatch,
+    ) => ExchangeAction.onDefinition(
+            ExchangeActionType.onGetItem,
             callback,
             dispatch,
     ),
@@ -111,14 +120,14 @@ const actions = {
         dispatch, 
     ),
 
-    [ExchangeActionType.emitGetItem]: (
+    [ExchangeActionType.emitGetItemByPage]: (
         data,
         pre = () => {},
         next = (res) => {},
         dispatch,
     ) => ExchangeAction.emitDefinition(
         data,
-        ExchangeActionType.emitGetItem,
+        ExchangeActionType.emitGetItemByPage,
         pre,
         next,
         dispatch, 
@@ -132,6 +141,19 @@ const actions = {
     ) => ExchangeAction.emitDefinition(
         data,
         ExchangeActionType.emitExchange,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [ExchangeActionType.emitGetItem]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => ExchangeAction.emitDefinition(
+        data,
+        ExchangeActionType.emitGetItem,
         pre,
         next,
         dispatch, 

@@ -5,12 +5,25 @@
 
 export default {
     onInsertItem: 'insert-item',
-    emitInsertItem: 'insert-item',
     onGiveLike: 'give-like',
     onExchange: 'exchange',
+    onGetItems: 'get-items',
+    onGetItem: 'get-item',
 
-    onGetItem: 'get-items',
-    emitGetItem: 'get-items',
+    emitInsertItem: 'insert-item',
     emitGiveLike: 'give-like',
     emitExchange: 'exchange',
+    emitGetItems: 'get-items',
+    emitGetItem: 'get-item',
+
 } 
+
+const options = {
+    population: {
+        itemList: 'itemList',
+    },
+}
+
+export {
+    options,
+}

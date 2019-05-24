@@ -20,7 +20,6 @@ class AppContainer extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      exchangingItem: null,
     };
     this.navigateToHome = this.navigateToHome.bind(this);
     this.navigateToLogIn = this.navigateToLogIn.bind(this);
@@ -31,6 +30,9 @@ class AppContainer extends Component {
     this.navigateToDetail = this.navigateToDetail.bind(this);
     this.navigateToExchange = this.navigateToExchange.bind(this);
     this.navigateToMessenger = this.navigateToMessenger.bind(this);
+  }
+
+  componentDidMount () {
   }
 
   navigateToPost () {
@@ -53,11 +55,8 @@ class AppContainer extends Component {
     this.action.navigate(Navigation.chatBox);
   }
 
-  navigateToExchange (item) {
-    this.setState({
-      exchangingItem: item,
-    })
-    console.log(` đây nè `)
+  navigateToExchange () {
+    
     this.action.navigate(Navigation.exchange);
   }
 
@@ -163,7 +162,6 @@ class AppContainer extends Component {
       <Exchange 
         style={AppContainerStyles}
         visible={navigation === Navigation.exchange}
-        item = {this.state.exchangingItem}
         navigateToHome={this.navigateToHome}
         navigateToInfo={this.navigateToInfo}
         />
@@ -212,6 +210,7 @@ class AppContainer extends Component {
         navigateToInfo={this.navigateToInfo}
         navigateToDetail={this.navigateToDetail}
         navigateToChatBox={this.navigateToChatBox}
+        navigateToExchange={this.navigateToExchange}
         />
     );
   }
@@ -248,6 +247,7 @@ const mapDispatchToProps = (dispatch) => ({
         navigation
       )
     ),
+
 })
 
 export default connect(

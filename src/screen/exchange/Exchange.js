@@ -6,9 +6,10 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import { connect } from 'react-redux';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
+import { connect } from 'react-redux';
+import { Codes } from '../../constant/Response';
 
 class Exchange extends Component {
   constructor (props) {
@@ -49,11 +50,18 @@ class Exchange extends Component {
   get action () {
     let {
       navigateToHome = () => console.log(` Vừa nhấn nút chuyển sang màn hình chính.`),
+      onGetItem = () => console.log(` Vừa nhận kết quả lấy vật phẩm.`),
+      onGiveLike = () => console.log(` Vừa nhận kết quả like.`),
+      onExchange = () => console.log(` Vừa nhận kết quả trao đổi.`),
       exchange = () => {},
     } = this.props;
     return {
       navigateToHome,
+      
       exchange,
+      onGetItem,
+      onGiveLike,
+      onExchange,
     }
   }
 
@@ -70,6 +78,36 @@ class Exchange extends Component {
       token,
       name,
     };
+  }
+
+  componentDidMount () {
+    let {
+      onGiveLike,
+      onGetItem,
+      onExchange,
+    } = this.action;
+
+    onGiveLike((res) => {
+      if(res.code === Codes.Success){
+        this.refresh();
+      }
+    });
+
+    onGetItem((res) => {
+      if(res.code === Codes.Success){
+        this.refresh();
+      }
+    });
+
+    onExchange((res) => {
+      if(res.code === Codes.Success){
+        this.refresh();
+      }
+    });
+  }
+
+  refresh () {
+    this.setState({});
   }
 
   onSubmitButtonClick () {
@@ -196,6 +234,7 @@ const mapStateToProps = (state) => {
   return {
     token: state.auth.token,
     name: state.auth.name,
+    item: state.post,
   }
 }
 
@@ -213,6 +252,37 @@ const mapDispatchToProps = (dispatch) => ({
         pre,
         next
       ),
+  ),
+
+  onExchange: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onExchange,
+    ).inject(
+      callback
+    )
+  ),
+
+  onGetItem: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onGetItem,
+    ).inject(
+      callback
+    )
+  ),
+
+  
+  onGiveLike: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onGiveLike,
+    ).inject(
+      callback
+    )
   ),
 
 })

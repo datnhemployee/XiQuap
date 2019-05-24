@@ -8,7 +8,13 @@ import {
 } from 'react-native';
 import {ImageSize} from '../../constant/Image';
 
-export default class CardPost extends Component {
+import ExchangeAction from '../../actions/Exchange/ExchangeAction';
+import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
+
+import { connect } from 'react-redux';
+import { options } from '../../services/API/PostDocument';
+
+class CardPost extends Component {
   constructor (props) {
     super(props);
     
@@ -20,11 +26,14 @@ export default class CardPost extends Component {
     let {
       giveLike,
     } = this.action;
-
     let {
       id,
+      token,
     } = this.dependencies;
-    giveLike(id);
+    giveLike({
+      _id: id,
+      token,
+    });
   }
 
   get action () {
@@ -32,13 +41,17 @@ export default class CardPost extends Component {
       navigateToDetail = () => {console.log(`Vừa bấm chuyển sang màn hình chi tiết`)},
       navigateToExchange = () => {console.log(`Vừa bấm chuyển sang màn hình trao đổi`)},
       navigateToChatBox = () => {console.log(`Vừa bấm chuyển sang màn hình nói chuyện`)},
+      
       giveLike = () => {console.log(`Vừa bấm thích bài viết`)},
+      getItem = () => {console.log(`Vừa bấm lấy thông tin chi tiết vật phẩm`)},
     } = this.props;
     return {
       navigateToDetail,
       navigateToExchange,
       navigateToChatBox,
+      
       giveLike,
+      getItem,
     }
   }
 
@@ -56,7 +69,9 @@ export default class CardPost extends Component {
       totalLike = 0,
       totalItem = 0,
 
+      token = '',
     } = this.props;
+    
     return {
       height,
 
@@ -69,6 +84,8 @@ export default class CardPost extends Component {
       description,
       totalLike,
       totalItem,
+
+      token,
     };
   }
 
@@ -77,31 +94,21 @@ export default class CardPost extends Component {
   detailButton_onClick () {
     let {
       navigateToDetail,
+      getItem,
     } = this.action;
 
     let {
-      id: _id,
-      ownerId,
-      ownerName,
-      ownerAvatar,
-      mainPicture,
-      name,
-      description,
-      totalLike,
-      totalItem,
+      id,
+      token,
     } = this.dependencies;
 
-    navigateToDetail({
-      _id,
-      ownerId,
-      ownerName,
-      ownerAvatar,
-      mainPicture,
-      name,
-      description,
-      totalLike,
-      totalItem,
-    });
+    getItem ({
+      _id: id,
+      token,
+      option: options.population.itemList,
+    },()=> {},
+    (res) => {navigateToDetail()})
+
   }
 
   likeButton_onClick () {
@@ -112,29 +119,19 @@ export default class CardPost extends Component {
   exchangeButton_onClick () {
     let {
       navigateToExchange,
+      getItem,
     } = this.action;
     let {
       id,
-      ownerId,
-      ownerName,
-      ownerAvatar,
-      mainPicture,
-      name,
-      description,
-      totalLike,
-      totalItem,
+      token,
     } = this.dependencies;
-    navigateToExchange({
+    getItem({
       _id: id,
-      ownerId,
-      ownerName,
-      ownerAvatar,
-      mainPicture,
-      name,
-      description,
-      totalLike,
-      totalItem,
-    });
+      token,
+    },()=>{},
+      (res) => {navigateToExchange();}
+    )
+    
   }
 
   contactButton_onClick () {
@@ -266,3 +263,52 @@ export default class CardPost extends Component {
     );
   }
 }
+
+
+const mapStateToProps = (state) => {
+  // console.log(`state chỗ Home ${JSON.stringify(state.post.list)}`)
+
+  return {
+    token: state.auth.token,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => ({
+  
+  getItem: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    ExchangeAction.emit(
+        ExchangeActionType.emitGetItem,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
+  giveLike: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    ExchangeAction.emit(
+        ExchangeActionType.emitGiveLike,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
+  // Chỉ có thể emit ở component
+  // on sẽ ở screen
+
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(CardPost);

@@ -114,9 +114,7 @@ class LogIn extends Component {
   }
 
   /**
-   * ==================================================================
    * Design
-   * ==================================================================
    */
 
   refresh () {
@@ -262,7 +260,7 @@ class LogIn extends Component {
 }
 
 const mapStateToProps = (state) => {
-  console.log(`state ${JSON.stringify(state)}`);
+  // console.log(`state ${JSON.stringify(state)}`);
   return {
   }
 }

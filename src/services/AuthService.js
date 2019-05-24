@@ -116,7 +116,7 @@ const actions = {
 
             if(res.code === Codes.Success){
                 LocalStorage.setToken(
-                    res.content,
+                    res.content.token,
                     () => {
                         callback(res);
                     }

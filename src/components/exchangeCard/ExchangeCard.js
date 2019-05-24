@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {ImageSize} from '../../constant/Image';
 
-export default class CardPost extends Component {
+export default class ExchangeCard extends Component {
   constructor (props) {
     super(props);
     
@@ -46,7 +46,8 @@ export default class CardPost extends Component {
     let {
       height = 700,
 
-      name = id = '',
+      name = '',
+      id = '',
       description = '',
       photoUrl = '',
       vendeeName = '',
