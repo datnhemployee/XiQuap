@@ -12,4 +12,6 @@ export default {
     emitLogOut: 'log-out',
     emitRegister: 'register',
     onRegister: 'register',
+    onGetInfo: 'get-info',
+    emitGetInfo: 'get-info',
 } 

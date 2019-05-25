@@ -19,6 +19,7 @@ import ChatBox from './chatBox/ChatBox';
 import Detail from './detail/Detail';
 import Stock from './stock/Stock';
 import AddStock from './addStock/AddStock';
+import StockDetail from './stockDetail/StockDetail';
 
 import { connect } from 'react-redux';
 import socket from '../../Configuration';
@@ -41,6 +42,7 @@ class AppContainer extends Component {
     this.navigateToMessenger = this.navigateToMessenger.bind(this);
     this.navigateToStock = this.navigateToStock.bind(this);
     this.navigateToAddStock = this.navigateToAddStock.bind(this);
+    this.navigateToStockDetail = this.navigateToStockDetail.bind(this);
 
     this.onNavigateAtHome = this.onNavigateAtHome.bind(this);
   }
@@ -92,6 +94,10 @@ class AppContainer extends Component {
 
   navigateToMessenger () {
     this.action.navigate(Navigation.messenger);
+  }
+
+  navigateToStockDetail () {
+    this.action.navigate(Navigation.stockDetail);
   }
 
   navigateToStock () {
@@ -232,6 +238,7 @@ class AppContainer extends Component {
         navigateToLogIn={this.navigateToLogIn}
         navigateToInfo={this.navigateToInfo}
         navigateToAddStock = {this.navigateToAddStock}
+        navigateToStockDetail = {this.navigateToStockDetail}
         />);
   }
 
@@ -292,6 +299,19 @@ class AppContainer extends Component {
       <AddStock 
         style={AppContainerStyles}
         visible={navigation === Navigation.addStock}
+        navigateToStock={this.navigateToStock}
+        />
+    );
+  }
+
+  get stockDetailScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <StockDetail 
+        style={AppContainerStyles}
+        visible={navigation === Navigation.stockDetail}
         navigateToStock={this.navigateToStock}
         />
     );
@@ -387,6 +407,7 @@ class AppContainer extends Component {
         {this.exchangeScreen}
         {this.detailScreen}
         {this.addStockScreen}
+        {this.stockDetailScreen}
       </View>
     );
   }

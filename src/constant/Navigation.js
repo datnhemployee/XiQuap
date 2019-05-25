@@ -10,4 +10,5 @@ export default {
     messenger: 9,
     stock: 10,
     addStock: 11,
+    stockDetail: 12,
 }

@@ -8,4 +8,7 @@ export default {
     onRegister: 'on-register',
     emitTokenLogIn: 'emit-token-log-in',
     onTokenLogIn: 'on-token-log-in',
+
+    emitGetInfo: 'emit-get-info',
+    onGetInfo: 'on-get-info',
 }

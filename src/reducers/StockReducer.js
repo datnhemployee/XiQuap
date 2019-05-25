@@ -31,6 +31,45 @@ const usecases = {
             ...state,
         }
     },
+    [StockActionType.emitBuy]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
+    [StockActionType.emitGetOne]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
+    [StockActionType.emitApprove]: (
+        state,
+        actionResult) => {
+
+        if(actionResult.error) {
+            return {
+                error: actionResult.payload,
+            }
+        } 
+        return {
+            ...state,
+        }
+    },
 
     
 
@@ -50,6 +89,45 @@ const usecases = {
         }
     },
     [StockActionType.onInsert]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
+            return {
+                ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [StockActionType.onBuy]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
+            return {
+                ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [StockActionType.onGetOne]: (
+        state,
+        actionResult) => {
+
+        if(!actionResult.error) {
+            return {
+                ...actionResult.payload,
+            }
+        } 
+        return {
+            error: actionResult.payload,
+        }
+    },
+    [StockActionType.onApprove]: (
         state,
         actionResult) => {
 

@@ -133,6 +133,17 @@ const actions = {
             }
         });
     },
+    [AuthActionType.onGetInfo]: (
+        callback = (res)=> {},
+    ) => {
+        on(AuthDocument.onGetInfo,(res) => {
+            if(res.code === Codes.Success){
+            }
+            else {
+            }
+            callback(res);
+        });
+    },
 
     // Emit
     [AuthActionType.emitTokenLogIn]: (
@@ -234,6 +245,37 @@ const actions = {
 
             emit(AuthDocument.emitRegister,
                 userForRegister,
+            );
+
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [AuthActionType.emitGetInfo]: (
+        {
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = !token ?
+            ` không tồn tại token.`
+            :undefined;
+        
+        if(!constrainst) {
+            emit(AuthDocument.emitGetInfo,
+                {
+                    token
+                },
             );
 
             next ({

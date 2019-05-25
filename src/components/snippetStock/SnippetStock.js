@@ -8,7 +8,13 @@ import {
 } from 'react-native';
 import {ImageSize} from '../../constant/Image';
 
-export default class SnippetStock extends Component {
+import { connect } from 'react-redux';
+import StockAction from '../../actions/Stock/StockAction';
+import StockActionType from '../../actions/Stock/StockActionType';
+import MessageBox from '../MessageBox';
+import { Codes } from '../../constant/Response';
+
+class SnippetStock extends Component {
   constructor (props) {
     super(props);
     
@@ -16,72 +22,117 @@ export default class SnippetStock extends Component {
 
   // logic
 
-  // approve () {
-  //   let {
-  //     approve,
-  //   } = this.action;
+  approve () {
+    let {
+      emitApprove,
+    } = this.action;
 
-  //   let {
-  //     id,
-  //     token,
-  //     itemId,
-  //   } = this.dependencies;
-  //   approve({
-  //     itemId: id, // Id của mục trao đổi
-  //     token,
-  //     _id: itemId, // Id của bài viết
-  //   });
-  // }
+    let {
+      token,
+      id,
+    } = this.dependencies;
+    emitApprove({
+      token,
+      _id: id, 
+    },()=> {},
+    (res)=>{
+    })
+  }
 
-  buy () {}
+  detailStock () {
+    let {
+      getOne,
+      navigateToStockDetail,
+    } = this.action;
+
+    let {
+      token,
+      id,
+    } = this.dependencies;
+
+    getOne ({
+      token,
+      _id: id,
+    },()=> {},
+    (res)=>{
+      navigateToStockDetail();
+    })
+  }
+
+  buy () {
+    let {
+      buy,
+    } = this.action;
+
+    let {
+      token,
+      id,
+    } = this.dependencies;
+
+    buy ({
+      token,
+      _id: id,
+    },()=> {},
+    ()=>{MessageBox(` Đang gửi dữ liệu lên máy chủ.`)})
+  }
 
   get action () {
     let {
-      approve = () => {console.log(`Vừa bấm đồng ý trao đổi`)},
+      buy = () => {console.log(`Vừa bấm đồng ý đổi quà`)},
+      emitApprove = () => {console.log(`Vừa bấm kiểm duyệt vật phẩm`)},
+      getOne = () => {console.log(`Vừa bấm lấy chi tiết quà`)},
+      navigateToStockDetail = () => {console.log(`Vừa bấm chuyển sang màn hình chi tiết vật phẩm`)},
     } = this.props;
     return {
-      approve,
+      buy,
+      navigateToStockDetail,
+      getOne,
+      emitApprove,
     }
   }
 
   get dependencies () {
     let {
       height = 700,
+      width = 100,
 
       name = '',
       id = '',
-      description = '',
       photoUrl = '',
-      type = '',
       point = 0,
-      onwerName = '',
-      onwerId= '',
       onwerTotalStar= '',
-      ownerAvatar= '',
+      approve = false,
+
+      token =null,
+      isAdmin = false,
 
     } = this.props;
     return {
       height,
+      width,
+
+      id ,
+      photoUrl ,
 
       name ,
-      id ,
-      description ,
-      photoUrl ,
-      type ,
       point ,
-      onwerName ,
-      onwerId,
       onwerTotalStar,
-      ownerAvatar,
+      approve,
 
+      token,
+      isAdmin,
     };
   }
 
   // Design
 
-  // approveButton_onClick () {
-  //   this.approve();
-  // }
+  approveButton_onClick () {
+    this.approve();
+  }
+
+  detailButton_onClick () {
+    this.detailStock();
+  }
 
   buyButton_onClick () {
     this.buy();
@@ -91,20 +142,16 @@ export default class SnippetStock extends Component {
   get label () {
     let {
       name ,
-      description ,
-      type ,
       point ,
-      onwerName ,
       onwerTotalStar,
+      approve,
     } = this.dependencies;
 
     return {
       name: (<Text style={{flex: 1,borderWidth: 1}}>{name}</Text>),
-      description: (<Text style={{flex: 1,borderWidth: 1}}>{description}</Text>),
-      type: (<Text style={{flex: 1,borderWidth: 1}}>Loại {type}</Text>),
       point: (<Text style={{flex: 1,borderWidth: 1}}>{point} điểm</Text>),
-      onwerName: (<Text style={{flex: 1,borderWidth: 1}}>@{onwerName}</Text>),
-      onwerTotalStar: (<Text style={{flex: 1,borderWidth: 1}}> {onwerTotalStar} sao</Text>),
+      onwerTotalStar: (<Text style={{flex: 1,borderWidth: 1}}> Chủ sở hữu {onwerTotalStar} sao</Text>),
+      approve: (<Text style={{flex: 1,borderWidth: 1}}> {!approve ?` Chưa phê duyệt`:` Đã phê duyệt`}</Text>),
     }
   }
 
@@ -121,6 +168,10 @@ export default class SnippetStock extends Component {
   }
 
   get button () {
+    let {
+      approve,
+    } = this.dependencies;
+
     return {
       buy: (
         <TouchableOpacity 
@@ -130,14 +181,25 @@ export default class SnippetStock extends Component {
           <Text>Đổi quà</Text>
         </TouchableOpacity>
       ),
-      // approve: (
-      //   <TouchableOpacity 
-      //     style={{flex: 1,borderWidth: 1}}
-      //     onPress={()=>{this.approveButton_onClick()}}
-      //     >
-      //     <Text>Đồng ý</Text>
-      //   </TouchableOpacity>
-      // ),
+      detail: (
+        <TouchableOpacity 
+          style={{flex: 1,borderWidth: 1}}
+          onPress={()=>{this.detailButton_onClick()}}
+          >
+            {this.label.name}
+            {this.label.onwerTotalStar}
+            {this.label.approve}
+            {this.label.point}
+        </TouchableOpacity>
+      ),
+      approve: (
+        <TouchableOpacity 
+          style={{flex: 1,borderWidth: 1}}
+          onPress={()=>{this.approveButton_onClick()}}
+          >
+          <Text style={approve? {color: `green`}:{color: `grey`}}>Đồng ý</Text>
+        </TouchableOpacity>
+      ),
     }
   }
 
@@ -146,15 +208,14 @@ export default class SnippetStock extends Component {
   }
 
   get body () {
+    let {
+      isAdmin = false,
+    } = this.dependencies;
     return (
     <View style={{flex: 1,borderWidth: 1}}>
-      {this.button.vendeeName}
-      {this.label.onwerName}
-      {this.label.onwerTotalStar}
-      {this.label.name}
-      {this.label.description}
-      {this.label.point}
+      {this.button.detail}
       {this.button.buy}
+      {isAdmin?this.button.approve:(<View/>)}
     </View>)
   }
 
@@ -174,12 +235,78 @@ export default class SnippetStock extends Component {
   render() {
     let {
       height,
+      width,
     } = this.dependencies;
 
     return (
-      <View style={{height: height}}>
+      <View style={{flex: 1,margin: 5}}>
         {this.form}
       </View>
     );
   }
 }
+
+
+const mapStateToProps = (state) => {
+  console.log(`state chỗ SnippetStock ${JSON.stringify(state)}`)
+
+  return {
+    token: state.auth.token,
+    isAdmin: state.auth.isAdmin,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => ({
+  
+  buy: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    StockAction.emit(
+        StockActionType.emitBuy,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
+  
+
+  emitApprove: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    StockAction.emit(
+        StockActionType.emitApprove,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
+  getOne: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    StockAction.emit(
+        StockActionType.emitGetOne,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+  // Chỉ có thể emit ở component
+  // on sẽ ở screen
+
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SnippetStock);

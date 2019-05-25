@@ -65,6 +65,33 @@ const actions = {
             dispatch,
     ),
 
+    [StockActionType.onBuy]: (
+        callback = (res) => {},
+        dispatch,
+    ) => StockAction.onDefinition(
+            StockActionType.onBuy,
+            callback,
+            dispatch,
+    ),
+
+    [StockActionType.onGetOne]: (
+        callback = (res) => {},
+        dispatch,
+    ) => StockAction.onDefinition(
+            StockActionType.onGetOne,
+            callback,
+            dispatch,
+    ),
+
+    [StockActionType.onApprove]: (
+        callback = (res) => {},
+        dispatch,
+    ) => StockAction.onDefinition(
+            StockActionType.onApprove,
+            callback,
+            dispatch,
+    ),
+
     // Emit
     [StockActionType.emitGet]: (
         data,
@@ -87,6 +114,45 @@ const actions = {
     ) => StockAction.emitDefinition(
         data,
         StockActionType.emitInsert,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [StockActionType.emitBuy]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => StockAction.emitDefinition(
+        data,
+        StockActionType.emitBuy,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [StockActionType.emitGetOne]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => StockAction.emitDefinition(
+        data,
+        StockActionType.emitGetOne,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [StockActionType.emitApprove]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => StockAction.emitDefinition(
+        data,
+        StockActionType.emitApprove,
         pre,
         next,
         dispatch, 

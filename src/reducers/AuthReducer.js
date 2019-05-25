@@ -43,6 +43,7 @@ const usecases = {
             ...state,
         }
     },
+
     [AuthActionType.onLogIn]: (
         state,
         actionResult) => {
@@ -82,6 +83,7 @@ const usecases = {
             error: actionResult.payload,
         }
     },
+    
     default: (state) => {
         return {
             ...state,

@@ -35,6 +35,42 @@ export const actions = {
             callback(res);
         });
     },
+    [StockActionType.onBuy]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onBuy,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
+    [StockActionType.onGetOne]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onGetOne,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
+    [StockActionType.onApprove]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onApprove,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
 
     // Emit
     [StockActionType.emitInsert]: (
@@ -93,6 +129,96 @@ export const actions = {
             emit(StockDocument.emitGet,
                 {
                     page,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [StockActionType.emitBuy]: (
+        {
+            _id,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitBuy,
+                {
+                    _id,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [StockActionType.emitGetOne]: (
+        {
+            _id,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitGetOne,
+                {
+                    _id,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [StockActionType.emitApprove]: (
+        {
+            _id,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitApprove,
+                {
+                    _id,
                     token,
                 }
             );

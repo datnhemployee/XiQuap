@@ -5,14 +5,16 @@ import {
   Modal,
   TouchableOpacity,
   FlatList,
+  Spacing,
 } from 'react-native';
 import SnippetStock from '../../components/snippetStock/SnippetStock';
 
 import { Codes } from '../../constant/Response';
-import LocalStorage from '../../storage/LocalStorage';
 import MessageBox from '../../components/MessageBox';
 import StockAction from '../../actions/Stock/StockAction';
+import AuthAction from '../../actions/Auth/AuthAction';
 import StockActionType from '../../actions/Stock/StockActionType';
+import AuthActionType from '../../actions/Auth/AuthActionType';
 import { connect } from 'react-redux';
 
 class Stock extends Component {
@@ -35,14 +37,14 @@ class Stock extends Component {
     } = this.action;
 
     let {
+      token,
     } = this.dependencies;
 
-    LocalStorage.getToken((token)=>{
-      getStocks({
-        page: Math.floor((this.state.amount / 6)),
-        token: token,
-      });
-    })
+    getStocks({
+      page: Math.floor((this.state.amount / 6)),
+      token: token,
+    },()=>{},
+    (res)=>{});
   }
 
   get dependencies () {
@@ -50,34 +52,54 @@ class Stock extends Component {
       visible = false,
       stock = [],
       point = 0,
+      token,
     } = this.props;
     return {
       visible,
       stock,
       point,
+      token,
     };
   }
 
   get action () {
     let {
       navigateToAddStock = () => console.log(` Vừa nhấn nút chuyển sang màn hình thêm vật phẩm`),
+      navigateToStockDetail = () => console.log(` Vừa nhấn nút chuyển sang màn hình chi tiết vật phẩm`),
       onInsert = () => console.log(` Đang chờ phản hồi thêm vật phẩm`),
       onGetStocks = () => console.log(` Đang chờ phản hồi lấy vật phẩm`),
+      onBuy = () => console.log(` Đang chờ phản hồi đổi vật phẩm`),
+      onApprove = () => console.log(` Đang chờ phản hồi kiểm định vật phẩm`),
+      onGetInfo = () => console.log(` Đang chờ phản hồi lấy thông tin cá nhân`),
       getStocks = () => console.log(` Gửi yêu cầu lấy vật phẩm`),
+      getInfo = () => console.log(` Gửi yêu cầu lấy thông tin cá nhân`),
 
     } = this.props;
     return {
       navigateToAddStock,
+      navigateToStockDetail,
       onInsert,
       onGetStocks,
       getStocks,
+      onBuy,
+      onApprove,
+      onGetInfo,
+      getInfo,
     }
   }
 
   componentDidMount () {
     let {
+      token,
+    } = this.dependencies;
+    let {
       onInsert,
       onGetStocks,
+      onBuy,
+      onApprove,
+      onGetInfo,
+
+      getInfo,
     } = this.action;
 
     this.onRefresh();
@@ -100,7 +122,66 @@ class Stock extends Component {
           list: temp.slice(),
           amount: temp.length,
         });
-        // MessageBox(`Lấy thêm dữ liệu thành công`);
+        MessageBox(`Lấy thêm dữ liệu thành công`);
+
+        getInfo({
+          token,
+        });
+      }
+    })
+
+    onBuy ((res) => {
+      if (res.code === Codes.Success) {
+        
+        // console.log(` Trả về cho người dùng ${JSON.stringify(res)}`)
+        // console.log(` state.list ${JSON.stringify(this.state.list)}`)
+
+        let temp = this.dependencies.stock;
+        // console.log(` temp ${JSON.stringify(temp)}`)
+
+        let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
+        // console.log(` foundPostIndex ${JSON.stringify(foundPostIndex)}`)
+
+        if (foundPostIndex != -1) {
+          this.state.list.splice(foundPostIndex - 1,1);
+        // console.log(` state after${JSON.stringify(this.state.list)}`)
+
+          this.setState({list: this.state.list.slice()});
+        }
+        
+        getInfo({
+          token,
+        });
+      }
+    })
+
+    onApprove((res) => {
+      if (res.code === Codes.Success) {
+        
+        let temp = this.dependencies.stock;
+
+        let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
+        if (foundPostIndex != -1) {
+          let returnList = this.state.list.slice();
+          returnList[foundPostIndex] = temp;
+
+          this.setState({
+            list: returnList.slice(),
+          });
+        }
+        
+        getInfo({
+          token,
+        });
+      }
+    })
+
+    onGetInfo((res) => {
+      if (res.code === Codes.Success) {
+        
+        this.setState({
+          point: this.dependencies.point,
+        });
       }
     })
   }
@@ -120,6 +201,15 @@ class Stock extends Component {
       navigateToAddStock,
     } = this.action;
     navigateToAddStock();
+  }
+
+  get label () {
+    let {
+      point,
+    } = this.dependencies;
+    return {
+      point: (<Text style={{flex: 1}}> Điểm của tôi: {point} điểm</Text>)
+    };
   }
 
   get button () {
@@ -142,13 +232,14 @@ class Stock extends Component {
       <FlatList
         style = {{flex: 1,borderWidth: 1}}
         data = {this.state.list}
+        numColumns = {2}
         renderItem = {({item}) => {
           
           // console.log(`snippetStock ${JSON.stringify(item)}`)
           return (
           <SnippetStock
-            height = {500}
-
+            height = {400}
+            width = {200}
             name = {item.name}
             id = {item._id}
             description = {item.description}
@@ -159,6 +250,7 @@ class Stock extends Component {
             onwerId= {item.owner._id}
             onwerTotalStar= {item.owner.totalStar}
             ownerAvatar= {item.owner.avatar}
+            approve = {item.approve}
 
             navigateToStockDetail = {navigateToStockDetail}
           />)
@@ -177,6 +269,7 @@ class Stock extends Component {
     return (
       <View
         style = {{flex: 1,borderWidth: 1}}>
+            {this.label.point}
             {this.button.add}
       </View>
     )
@@ -217,7 +310,7 @@ const mapStateToProps = (state) => {
 
   return {
     token: state.auth.token,
-    point: state.auth.point,
+    point: state.user.point,
     stock: state.stock,
   }
 }
@@ -230,6 +323,20 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     StockAction.emit(
         StockActionType.emitGet,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
+  getInfo: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    AuthAction.emit(
+        AuthActionType.emitGetInfo,
       ).inject(
         data,
         pre,
@@ -251,6 +358,37 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     StockAction.on(
       StockActionType.onInsert,
+    ).inject(
+      callback
+    )
+  ),
+
+  onBuy: (
+    callback = (res)=>{},
+  ) => dispatch(
+    StockAction.on(
+      StockActionType.onBuy,
+    ).inject(
+      callback
+    )
+  ),
+
+  
+  onApprove: (
+    callback = (res)=>{},
+  ) => dispatch(
+    StockAction.on(
+      StockActionType.onApprove,
+    ).inject(
+      callback
+    )
+  ),
+
+  onGetInfo: (
+    callback = (res)=>{},
+  ) => dispatch(
+    AuthAction.on(
+      AuthActionType.onGetInfo,
     ).inject(
       callback
     )
