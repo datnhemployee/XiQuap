@@ -1,0 +1,136 @@
+
+import {
+    Codes
+} from '../constant/Response';
+import {
+    on,
+    emit,
+} from './Service';
+import MessageBox from '../components/MessageBox';
+import LocalStorage from '../storage/LocalStorage';
+import StockDocument from './API/StockDocument';
+import StockActionType from '../actions/Stock/StockActionType';
+
+export const actions = {
+    // On
+    [StockActionType.onGet]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onGet,(res) => {
+            if(res.code === Codes.Success){
+            } else {
+            }
+            callback(res);
+        });
+    },
+    [StockActionType.onInsert]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onInsert,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
+
+    // Emit
+    [StockActionType.emitInsert]: (
+        {
+            name,
+            description,
+            typeName,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = !name ? 
+            `Chưa ghi tên vật phẩm.`:
+            !typeName ?
+            `Chưa chọn tên loại vật phẩm`:
+            !token ?
+            `Phải đính kèm token`:
+            undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitInsert,
+                {
+                    name,
+                    description,
+                    typeName,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [StockActionType.emitGet]: (
+        {
+            page,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitGet,
+                {
+                    page,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    default: () => {}
+}
+
+export default class StockService {
+    constructor () {}
+    
+    static on (name,callback = (res) => {}) {
+        let action = actions[name];
+        if(!action){
+            return actions.default();
+        }
+        return action(callback);
+    } 
+
+    static emit (name,data,pre = () => {},next = (res) => {}) {
+        let action = actions[name];
+        if(!action){
+            return actions.default();
+        }
+        return action(
+            data,
+            pre,
+            next,
+        );
+    } 
+
+}

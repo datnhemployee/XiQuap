@@ -9,4 +9,5 @@ export default {
     exchange: 8,
     messenger: 9,
     stock: 10,
+    addStock: 11,
 }

@@ -16,22 +16,24 @@ export default class SnippetStock extends Component {
 
   // logic
 
-  approve () {
-    let {
-      approve,
-    } = this.action;
+  // approve () {
+  //   let {
+  //     approve,
+  //   } = this.action;
 
-    let {
-      id,
-      token,
-      itemId,
-    } = this.dependencies;
-    approve({
-      itemId: id, // Id của mục trao đổi
-      token,
-      _id: itemId, // Id của bài viết
-    });
-  }
+  //   let {
+  //     id,
+  //     token,
+  //     itemId,
+  //   } = this.dependencies;
+  //   approve({
+  //     itemId: id, // Id của mục trao đổi
+  //     token,
+  //     _id: itemId, // Id của bài viết
+  //   });
+  // }
+
+  buy () {}
 
   get action () {
     let {
@@ -51,50 +53,58 @@ export default class SnippetStock extends Component {
       description = '',
       photoUrl = '',
       type = '',
-
       point = 0,
+      onwerName = '',
+      onwerId= '',
+      onwerTotalStar= '',
+      ownerAvatar= '',
 
     } = this.props;
     return {
       height,
 
-      id,
-      name,
-      description,
-      photoUrl,
+      name ,
+      id ,
+      description ,
+      photoUrl ,
+      type ,
+      point ,
+      onwerName ,
+      onwerId,
+      onwerTotalStar,
+      ownerAvatar,
 
-      point,
     };
   }
 
   // Design
 
-  approveButton_onClick () {
-    this.approve();
-  }
+  // approveButton_onClick () {
+  //   this.approve();
+  // }
 
-
-
-  contactButton_onClick () {
-    let {
-      navigateToChatBox,
-    } = this.action;
-    navigateToChatBox();
+  buyButton_onClick () {
+    this.buy();
   }
 
   
   get label () {
     let {
-  
-      name,
-      description,
-      vendeeName,
+      name ,
+      description ,
+      type ,
+      point ,
+      onwerName ,
+      onwerTotalStar,
     } = this.dependencies;
 
     return {
       name: (<Text style={{flex: 1,borderWidth: 1}}>{name}</Text>),
       description: (<Text style={{flex: 1,borderWidth: 1}}>{description}</Text>),
-      vendeeName: (<Text style={{flex: 1,borderWidth: 1}}>@{vendeeName}</Text>),
+      type: (<Text style={{flex: 1,borderWidth: 1}}>Loại {type}</Text>),
+      point: (<Text style={{flex: 1,borderWidth: 1}}>{point} điểm</Text>),
+      onwerName: (<Text style={{flex: 1,borderWidth: 1}}>@{onwerName}</Text>),
+      onwerTotalStar: (<Text style={{flex: 1,borderWidth: 1}}> {onwerTotalStar} sao</Text>),
     }
   }
 
@@ -112,22 +122,22 @@ export default class SnippetStock extends Component {
 
   get button () {
     return {
-      vendee: (
+      buy: (
         <TouchableOpacity 
           style={{flex: 1,borderWidth: 1}}
-          onPress={()=>{this.detailButton_onClick()}}
+          onPress={()=>{this.buyButton_onClick()}}
           >
-          {this.label.vendeeName}
+          <Text>Đổi quà</Text>
         </TouchableOpacity>
       ),
-      approve: (
-        <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
-          onPress={()=>{this.likeButton_onClick()}}
-          >
-          <Text>Đồng ý</Text>
-        </TouchableOpacity>
-      ),
+      // approve: (
+      //   <TouchableOpacity 
+      //     style={{flex: 1,borderWidth: 1}}
+      //     onPress={()=>{this.approveButton_onClick()}}
+      //     >
+      //     <Text>Đồng ý</Text>
+      //   </TouchableOpacity>
+      // ),
     }
   }
 
@@ -139,9 +149,12 @@ export default class SnippetStock extends Component {
     return (
     <View style={{flex: 1,borderWidth: 1}}>
       {this.button.vendeeName}
+      {this.label.onwerName}
+      {this.label.onwerTotalStar}
       {this.label.name}
       {this.label.description}
-      {this.button.approve}
+      {this.label.point}
+      {this.button.buy}
     </View>)
   }
 

@@ -18,6 +18,7 @@ import Info from './info/Info';
 import ChatBox from './chatBox/ChatBox';
 import Detail from './detail/Detail';
 import Stock from './stock/Stock';
+import AddStock from './addStock/AddStock';
 
 import { connect } from 'react-redux';
 import socket from '../../Configuration';
@@ -39,6 +40,8 @@ class AppContainer extends Component {
     this.navigateToExchange = this.navigateToExchange.bind(this);
     this.navigateToMessenger = this.navigateToMessenger.bind(this);
     this.navigateToStock = this.navigateToStock.bind(this);
+    this.navigateToAddStock = this.navigateToAddStock.bind(this);
+
     this.onNavigateAtHome = this.onNavigateAtHome.bind(this);
   }
 
@@ -94,6 +97,10 @@ class AppContainer extends Component {
   navigateToStock () {
     this.action.navigate(Navigation.stock);
     !!this.refHomeScreen ? this.refHomeScreen.setPage(1):undefined;
+  }
+
+  navigateToAddStock () {
+    this.action.navigate(Navigation.addStock);
   }
 
   onNavigateAtHome (page) {
@@ -223,10 +230,8 @@ class AppContainer extends Component {
         // key = "ViewPagerAndroid_Home"
         style={AppContainerStyles}
         navigateToLogIn={this.navigateToLogIn}
-        navigateToPost={this.navigateToPost}
-        navigateToDetail={this.navigateToDetail}
         navigateToInfo={this.navigateToInfo}
-        navigateToExchange = {this.navigateToExchange}
+        navigateToAddStock = {this.navigateToAddStock}
         />);
   }
 
@@ -275,6 +280,19 @@ class AppContainer extends Component {
         style={AppContainerStyles}
         visible={navigation === Navigation.post}
         navigateToHome={this.navigateToHome}
+        />
+    );
+  }
+
+  get addStockScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <AddStock 
+        style={AppContainerStyles}
+        visible={navigation === Navigation.addStock}
+        navigateToStock={this.navigateToStock}
         />
     );
   }
@@ -368,6 +386,7 @@ class AppContainer extends Component {
         {this.postScreen}
         {this.exchangeScreen}
         {this.detailScreen}
+        {this.addStockScreen}
       </View>
     );
   }

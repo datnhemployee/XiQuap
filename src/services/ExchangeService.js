@@ -90,7 +90,6 @@ export const actions = {
     // Emit
     [ExchangeType.emitInsertItem]: (
         {
-            ownerName,
             name,
             description,
             typeName,
@@ -101,9 +100,7 @@ export const actions = {
     ) => {
         pre();
 
-        const constrainst = !ownerName ?
-            `Phải đính kèm tên chủ bài đăng.`:
-            !name ? 
+        const constrainst = !name ? 
             `Chưa ghi tên vật phẩm.`:
             !typeName ?
             `Chưa chọn tên loại vật phẩm`:
@@ -114,7 +111,6 @@ export const actions = {
         if(!constrainst){
             emit(PostDocument.emitInsertItem,
                 {
-                    ownerName,
                     name,
                     description,
                     typeName,
