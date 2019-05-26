@@ -11,4 +11,8 @@ export default {
     stock: 10,
     addStock: 11,
     stockDetail: 12,
+    myStock: 13,
+    waitting: 14,
+    myShop: 15,
+    bought: 16,
 }

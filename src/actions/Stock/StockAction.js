@@ -92,6 +92,24 @@ const actions = {
             dispatch,
     ),
 
+    [StockActionType.onGetBought]: (
+        callback = (res) => {},
+        dispatch,
+    ) => StockAction.onDefinition(
+            StockActionType.onGetBought,
+            callback,
+            dispatch,
+    ),
+
+    [StockActionType.onGetMyStock]: (
+        callback = (res) => {},
+        dispatch,
+    ) => StockAction.onDefinition(
+            StockActionType.onGetMyStock,
+            callback,
+            dispatch,
+    ),
+
     // Emit
     [StockActionType.emitGet]: (
         data,
@@ -153,6 +171,32 @@ const actions = {
     ) => StockAction.emitDefinition(
         data,
         StockActionType.emitApprove,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [StockActionType.emitGetMyStock]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => StockAction.emitDefinition(
+        data,
+        StockActionType.emitGetMyStock,
+        pre,
+        next,
+        dispatch, 
+    ),
+
+    [StockActionType.emitGetBought]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => StockAction.emitDefinition(
+        data,
+        StockActionType.emitGetBought,
         pre,
         next,
         dispatch, 

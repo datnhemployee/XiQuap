@@ -4,6 +4,10 @@ import NavigationReducer from "./NavigationReducer";
 import PostReducer from "./PostReducer";
 import StockReducer from "./StockReducer";
 import UserReducer from "./UserReducer";
+import MyShopReducer from "./MyShopReducer";
+import MyStockReducer from "./MyStockReducer";
+import WaittingReducer from "./WaittingReducer";
+import BoughtReducer from "./BoughtReducer";
 
 export default combineReducers({
     navigation: NavigationReducer,
@@ -11,4 +15,8 @@ export default combineReducers({
     post: PostReducer,
     stock: StockReducer,
     user: UserReducer,
+    myShop: MyShopReducer,
+    myStock: MyStockReducer,
+    waitting: WaittingReducer,
+    bought: BoughtReducer
 });

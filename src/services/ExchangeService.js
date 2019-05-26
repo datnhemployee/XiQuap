@@ -13,6 +13,26 @@ import LocalStorage from '../storage/LocalStorage';
 
 export const actions = {
     // On
+    [ExchangeType.onGetMyShop]: (
+        callback = (res)=> {},
+    ) => {
+        on(PostDocument.onGetMyShop,(res) => {
+            if(res.code === Codes.Success){
+            } else {
+            }
+            callback(res);
+        });
+    },
+    [ExchangeType.onGetWaitting]: (
+        callback = (res)=> {},
+    ) => {
+        on(PostDocument.onGetWaitting,(res) => {
+            if(res.code === Codes.Success){
+            } else {
+            }
+            callback(res);
+        });
+    },
     [ExchangeType.onInsertItem]: (
         callback = (res)=> {},
     ) => {
@@ -114,6 +134,66 @@ export const actions = {
                     name,
                     description,
                     typeName,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [ExchangeType.emitGetMyShop]: (
+        {
+            page,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(PostDocument.emitGetMyShop,
+                {
+                    page,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [ExchangeType.emitGetWaitting]: (
+        {
+            page,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(PostDocument.emitGetWaitting,
+                {
+                    page,
                     token,
                 }
             );

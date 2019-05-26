@@ -6,103 +6,108 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import CardPost from '../../components/card/CardPost';
-
-import ExchangeAction from '../../actions/Exchange/ExchangeAction';
-import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import { Codes } from '../../constant/Response';
-import MessageBox from '../../components/MessageBox';
-import LocalStorage from '../../storage/LocalStorage';
 
 import { connect } from 'react-redux';
+import ExchangeAction from '../../actions/Exchange/ExchangeAction';
+import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
+import LocalStorage from '../../storage/LocalStorage';
+import CardPost from '../../components/card/CardPost';
 
-class Home extends Component {
+class MyShop extends Component {
   constructor (props) {
     super(props);
     this.state = {
       refreshing: false,
-      amount: 0,
       list: [],
+      amount: 0,
     }
 
-    this.onEndReached = this.onEndReached.bind(this);
     this.onRefresh = this.onRefresh.bind(this);
   }
 
-  getMore() {
+  getMore () {
+    // let {
+    //   token,
+    // } = this.dependencies;
     let {
-      getMore,
+      getMyShop,
     } = this.action;
-    LocalStorage.getToken((token)=>{
-      getMore({
+
+    LocalStorage.getToken((res) => {
+      getMyShop ({
+        token: res,
         page: Math.floor((this.state.amount / 5)),
-        token: token,
       });
     })
   }
 
   get action () {
     let {
-      navigateToPost = () => {console.log(`Vừa bấm chuyển sang màn hình đăng bài`)},
-      navigateToLogIn = () => {console.log(`Vừa bấm chuyển sang màn hình đăng nhập`)},
-      navigateToInfo = () => {console.log(`Vừa bấm chuyển sang màn hình chính`)},
-      navigateToDetail = () => {console.log(`Vừa bấm chuyển sang màn hình chi tiết`)},
-      navigateToExchange = () => {console.log(`Vừa bấm chuyển sang màn hình trao đổi`)},
-      navigateToMyShop = () => {console.log(`Vừa bấm chuyển sang màn hình sạp của tôi`)},
-      navigateToWaitting = () => {console.log(`Vừa bấm chuyển sang màn hình vật chờ trao đổi`)},
-      
-      getMore = () => {console.log(`Đang lấy thêm dữ liệu`)},
-      onGetMore = () => {},
-      onGiveLike = () => {},
-      onExchange = () => {},
-      onApproved = () => {},
+      getMyShop = () => console.log(` Vừa gởi yêu cầu lấy những vật phẩm mà tôi đã đăng.`),
+      navigateToExchange = () => console.log(` Vừa bấm chuyển sang màn hình trao đổi.`),
+      navigateToDetail = () => console.log(` Vừa bấm chuyển sang màn hình chi tiết.`),
+      navigateToHome = () => console.log(` Vừa bấm chuyển sang màn hình chính.`),
+      onGetMyShop = () => console.log(` Đang chờ yêu cầu lấy những vật phẩm đã đăng.`),
+      onGiveLike = () => console.log(` Đang chờ yêu cầu lấy những vật phẩm đã like.`),
+      onApproved = () => console.log(` Đang chờ yêu cầu lấy những vật phẩm đã được chấp thuận.`),
+      onExchange = () => console.log(` Đang chờ yêu cầu lấy những vật phẩm đang trao đổi.`),
     } = this.props;
     return {
-      navigateToPost,
-      navigateToLogIn,
-      navigateToInfo,
       navigateToDetail,
       navigateToExchange,
-      navigateToMyShop,
-      navigateToWaitting,
-
-      getMore,
-      onGetMore,
+      getMyShop,
+      onGetMyShop,
+      navigateToHome,
       onGiveLike,
-      onExchange,
       onApproved,
-    }
+      onExchange,
+    };
+  }
+
+  get dependencies () {
+    let {
+      visible = false,
+      myShop = [],
+      token = null,
+      user= null,
+      post,
+    } = this.props;
+    return {
+      visible,
+      myShop,
+      token,
+      user,
+      post,
+    };
   }
 
   componentDidMount () {
     let {
-      onGetMore,
+      onGetMyShop,
       onGiveLike,
-      onExchange,
       onApproved,
+      onExchange,
     } = this.action;
 
-    this.onRefresh();
-    onGetMore((res)=>{
+    // this.onRefresh();
 
-      if (res.code===Codes.Success){
-        let temp = this.state.list.slice();
-          temp.splice(
-            Math.floor(this.state.list.length / 5) * 5,
-            this.state.list.length % 5,
-          );
-        temp = temp.concat(this.dependencies.post.list);
-        console.log(`length: ${temp.length}`)
-        this.setState({
-          list: temp.slice(),
-          amount: temp.length,
-        });
-        // MessageBox(`Lấy thêm dữ liệu thành công`);
-      } else {
-        // MessageBox(`Đã lấy được toàn bộ dữ liệu`);
+    onGetMyShop((res) => {
+      if(res.code === Codes.Success) {
+          let temp = this.state.list.slice();
+            temp.splice(
+              Math.floor(this.state.list.length / 5) * 5,
+              this.state.list.length % 5,
+            );
+          temp = temp.concat(this.dependencies.myShop.list);
+          console.log(`length: ${temp.length}`)
+          this.setState({
+            list: temp.slice(),
+            amount: temp.length,
+          });
+          // MessageBox(`Lấy thêm dữ liệu thành công`);
       }
-
-    });
+    })
 
     onGiveLike ((res) => {
       if (res.code === Codes.Success) {
@@ -136,29 +141,23 @@ class Home extends Component {
             list: returnList.slice(),
           });
         }
-        
       }
     })
 
     onApproved ((res) => {
       if (res.code === Codes.Success) {
         
-        console.log(` Trả về cho người dùng ${JSON.stringify(res)}`)
-        console.log(` state.list ${JSON.stringify(this.state.list)}`)
-
         let temp = this.dependencies.post;
-        console.log(` temp ${JSON.stringify(temp)}`)
 
         let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
-        console.log(` foundPostIndex ${JSON.stringify(foundPostIndex)}`)
-
         if (foundPostIndex != -1) {
-          this.state.list.splice(foundPostIndex - 1,1);
-        console.log(` state after${JSON.stringify(this.state.list)}`)
+          let returnList = this.state.list.slice();
+          returnList[foundPostIndex] = temp;
 
-          this.setState({list: this.state.list.slice()});
+          this.setState({
+            list: returnList.slice(),
+          });
         }
-        
       }
     })
   }
@@ -169,87 +168,48 @@ class Home extends Component {
     this.setState({refreshing: false});
   }
 
-  onEndReached () {
-    // this.onRefresh();
-  }
-
-  get dependencies () {
-    let {
-      post = [],
-      token,
-    } = this.props;
-    // console.log(`dependencies chỗ Home ${JSON.stringify(list)}`)
-
+  get label () {
     return {
-      post,
-      token,
-    };
-  }
-
-  postButton_onClick () {
-    let {
-      navigateToPost,
-    } = this.action;
-    navigateToPost();
-  }
-  shopButton_onClick () {
-    let {
-      navigateToMyShop,
-    } = this.action;
-    navigateToMyShop();
-  }
-  waitButton_onClick () {
-    let {
-      navigateToWaitting,
-    } = this.action;
-    navigateToWaitting();
+      screen: (<Text style={{flex: 1}}>Sạp của tôi</Text>)
+    }
   }
 
   get button () {
+    let {
+      navigateToHome,
+    } = this.action;
     return {
-      post: (
+      back: (
         <TouchableOpacity 
           style={{flex: 1}}
-          onPress={()=>{this.postButton_onClick()}}
-          >
-          <Text>Thêm bài viết</Text>
-        </TouchableOpacity>
-      ),
-      shop: (
-        <TouchableOpacity 
-          style={{flex: 1}}
-          onPress={()=>{this.shopButton_onClick()}}
-          >
-          <Text>Sạp của tôi</Text>
-        </TouchableOpacity>
-      ),
-      wait: (
-        <TouchableOpacity 
-          style={{flex: 1}}
-          onPress={()=>{this.waitButton_onClick()}}
-          >
-          <Text>Giỏ chờ</Text>
+          onPress={()=> {navigateToHome()}}>
+          <Text>Trở lại </Text>
         </TouchableOpacity>
       )
     }
   }
+
   get header () {
     return (
-    <View style={{flex: 1}}>
-      {this.button.post}
-      {this.button.shop}
-      {this.button.wait}
-    </View>)
+      <View style={{flex: 1}}>
+        {this.button.back}
+        {this.label.screen}
+      </View>
+    )
   }
 
   get body () {
     let {
-      navigateToExchange,
       navigateToDetail,
+      navigateToExchange,
     } = this.action;
+
+    let {
+      user,
+    } = this.dependencies;
     return (
-    <View style={{flex: 8}}>
-      <FlatList
+      <View style={{flex: 8}}>
+        <FlatList
         data = {this.state.list}
         renderItem = {({item}) => {
           
@@ -260,9 +220,9 @@ class Home extends Component {
             height = {500}
 
             id = {item._id}
-            ownerId = {item.owner._id}
-            ownerName = {item.owner.name}
-            ownerAvatar = {item.owner.avatar}
+            ownerId = {!user?undefined:user._id}
+            ownerName = {!user?undefined:user.name}
+            ownerAvatar = {!user?undefined:user.avatar}
             mainPicture = {item.mainPicture}
             name = {item.name}
             description = {item.description}
@@ -276,16 +236,27 @@ class Home extends Component {
         showsVerticalScrollIndicator = {false}
         refreshing = {this.state.refreshing}
         onRefresh = {this.onRefresh}
-        onEndReached = {this.onEndReached}
+        onEndReached = {() => {}}
         onEndReachedThreshold={0.5}
         keyExtractor={(item,index)=>`PostIndex${index}`}
       />
-    </View>)
+      </View>
+    )
+  }
+
+  get header () {
+    return (
+      <View style={{flex: 1}}>
+        {this.button.back}
+        {this.label.screen}
+      </View>
+    )
   }
 
   get footer () {
-    return (<View/>)
+    return (<View></View>)
   }
+  
   get form () {
     return (
       <View style={{flex: 1}}>
@@ -297,55 +268,61 @@ class Home extends Component {
   }
 
   render() {
-    return this.form;
+    let {
+      visible,
+    } = this.dependencies;
+
+
+    return (
+      <Modal
+        animationType="fade"
+        transparent={false}
+        visible={visible}
+        onRequestClose={()=>{}}
+        onShow={()=> {this.onRefresh()}}
+        >
+        {this.form}
+      </Modal>
+    );
   }
 }
-
 
 const mapStateToProps = (state) => {
   // console.log(`state chỗ Home ${JSON.stringify(state.post.list)}`)
 
   return {
     token: state.auth.token,
+    myShop: state.myShop,
+    user: state.user,
     post: state.post,
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  getMore: (
+  getMyShop: (
     data,
     pre = () => {},
     next = (res) => {},
   ) => dispatch(
     ExchangeAction.emit(
-        ExchangeActionType.emitGetItemByPage,
+        ExchangeActionType.emitGetMyShop,
       ).inject(
         data,
         pre,
         next
       ),
   ),
-  
-  
 
-  onGetMore: (
+  onGetMyShop: (
     callback = (res)=>{},
   ) => dispatch(
     ExchangeAction.on(
-      ExchangeActionType.onGetItemByPage,
+      ExchangeActionType.onGetMyShop,
     ).inject(
       callback
     )
   ),
-  onGiveLike: (
-    callback = (res)=>{},
-  ) => dispatch(
-    ExchangeAction.on(
-      ExchangeActionType.onGiveLike,
-    ).inject(
-      callback
-    )
-  ),
+
   onExchange: (
     callback = (res)=>{},
   ) => dispatch(
@@ -355,6 +332,17 @@ const mapDispatchToProps = (dispatch) => ({
       callback
     )
   ),
+
+  onGiveLike: (
+    callback = (res)=>{},
+  ) => dispatch(
+    ExchangeAction.on(
+      ExchangeActionType.onGiveLike,
+    ).inject(
+      callback
+    )
+  ),
+
   onApproved: (
     callback = (res)=>{},
   ) => dispatch(
@@ -370,4 +358,4 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Home);
+)(MyShop);

@@ -71,6 +71,30 @@ export const actions = {
             callback(res);
         });
     },
+    [StockActionType.onGetMyStock]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onGetMyStock,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
+    [StockActionType.onGetBought]: (
+        callback = (res)=> {},
+    ) => {
+        on(StockDocument.onGetBought,(res) => {
+            if(res.code === Codes.Success){
+                
+            } else {
+                
+            }
+            callback(res);
+        });
+    },
 
     // Emit
     [StockActionType.emitInsert]: (
@@ -219,6 +243,66 @@ export const actions = {
             emit(StockDocument.emitApprove,
                 {
                     _id,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [StockActionType.emitGetMyStock]: (
+        {
+            page,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitGetMyStock,
+                {
+                    page,
+                    token,
+                }
+            );
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [StockActionType.emitGetBought]: (
+        {
+            page,
+            token,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = undefined;
+
+        if(!constrainst){
+            emit(StockDocument.emitGetBought,
+                {
+                    page,
                     token,
                 }
             );

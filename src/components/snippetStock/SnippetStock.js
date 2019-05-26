@@ -239,7 +239,7 @@ class SnippetStock extends Component {
     } = this.dependencies;
 
     return (
-      <View style={{flex: 1,margin: 5}}>
+      <View style={{flex: 1/2,margin: 1}}>
         {this.form}
       </View>
     );
@@ -248,7 +248,7 @@ class SnippetStock extends Component {
 
 
 const mapStateToProps = (state) => {
-  console.log(`state chỗ SnippetStock ${JSON.stringify(state)}`)
+  // console.log(`state chỗ SnippetStock ${JSON.stringify(state)}`)
 
   return {
     token: state.auth.token,

@@ -99,6 +99,22 @@ const actions = {
             callback,
             dispatch,
     ),
+    [ExchangeActionType.onGetMyShop]: (
+        callback = (res) => {},
+        dispatch,
+    ) => ExchangeAction.onDefinition(
+            ExchangeActionType.onGetMyShop,
+            callback,
+            dispatch,
+    ),
+    [ExchangeActionType.onGetWaitting]: (
+        callback = (res) => {},
+        dispatch,
+    ) => ExchangeAction.onDefinition(
+            ExchangeActionType.onGetWaitting,
+            callback,
+            dispatch,
+    ),
     
     // Emit
     [ExchangeActionType.emitInsertItem]: (
@@ -174,6 +190,30 @@ const actions = {
     ) => ExchangeAction.emitDefinition(
         data,
         ExchangeActionType.emitApproveItem,
+        pre,
+        next,
+        dispatch, 
+    ),
+    [ExchangeActionType.emitGetMyShop]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => ExchangeAction.emitDefinition(
+        data,
+        ExchangeActionType.emitGetMyShop,
+        pre,
+        next,
+        dispatch, 
+    ),
+    [ExchangeActionType.emitGetWaitting]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => ExchangeAction.emitDefinition(
+        data,
+        ExchangeActionType.emitGetWaitting,
         pre,
         next,
         dispatch, 

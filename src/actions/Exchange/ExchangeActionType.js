@@ -7,6 +7,8 @@ export default {
     emitExchange: 'emit-exchange',
     emitGetItem: 'emit-get-item',
     emitApproveItem: 'emit-approve-item',
+    emitGetMyShop: 'emit-my-shop',
+    emitGetWaitting: 'emit-my-waitting',
 
     onInsertItem: 'on-insert-item',
     onGetItemByPage: 'on-get-item-by-page',
@@ -14,4 +16,6 @@ export default {
     onExchange: 'on-exchange',
     onGetItem: 'on-get-item',
     onApproveItem: 'on-approve-item',
+    onGetMyShop: 'on-my-shop',
+    onGetWaitting: 'on-my-waitting',
 }
