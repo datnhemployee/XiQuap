@@ -5,11 +5,15 @@ import {
   Modal,
   TextInput,
   TouchableOpacity,
+  Image,
 } from 'react-native';
+import ImagePicker from 'react-native-image-picker';
 import MessageBox from '../../components/MessageBox';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import { connect } from 'react-redux';
+import Axios from 'axios';
+import createFormData from '../../helpers/FormData';
 
 class Post extends Component {
   constructor (props) {
@@ -18,7 +22,10 @@ class Post extends Component {
       name: '',
       description: '',
       typeName: '',
+      image: null,
     }
+
+    this.sendImage = this.sendImage.bind(this);
   }
 
   submit () {
@@ -41,6 +48,7 @@ class Post extends Component {
       ownerName: ownerName,
       token: token,
     });
+    
   }
 
   get action () {
@@ -99,6 +107,29 @@ class Post extends Component {
     this.submit();
   }
 
+  sendImage () {
+    const options = {
+      noData: true,
+    }
+    ImagePicker.launchImageLibrary(options, res => {
+    // console.log(`uri ${JSON.stringify(!!res)}`);
+
+      if(!!res) {
+        this.setState({image: res},async () => {
+          try {
+            let response = await Axios.post('http://192.168.1.36:3000/',
+            createFormData(this.state.image, {}));
+            console.log(`Kết quả là: `,JSON.stringify(response))
+          } catch (sendErr) {
+            console.log(`Lỗi ở đây ${sendErr}`)
+          } 
+        });
+      }
+    })
+
+    
+  }
+
   get button () {
     return {
       submit: (
@@ -106,6 +137,13 @@ class Post extends Component {
         style={{flex: 1}}
         onPress={()=>{this.submitButton_onClick()}}
         ><Text>Đăng</Text>
+        </TouchableOpacity>
+      ),
+      image: (
+        <TouchableOpacity 
+        style={{flex: 1}}
+        onPress={()=>{this.sendImage()}}
+        ><Text>Gửi hình</Text>
         </TouchableOpacity>
       ),
     }
@@ -134,6 +172,12 @@ class Post extends Component {
     }
   }
 
+  get image () {
+    return (
+      <Image source={{uri: !!this.state.image?this.state.image.uri:''}}/>
+    )
+  }
+
   get header () {return <View/>}
   get body () {
     return (
@@ -142,6 +186,8 @@ class Post extends Component {
         {this.textInput.name}
         {this.textInput.typeName}
         {this.textInput.description}
+        {this.image}
+        {this.button.image}
         {this.button.submit}
       </View>
     )
