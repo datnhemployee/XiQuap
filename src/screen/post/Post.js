@@ -7,13 +7,11 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import ImagePicker from 'react-native-image-picker';
-import MessageBox from '../../components/MessageBox';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
+import { openLibrary } from '../../actions/PhotoAction';
 import { connect } from 'react-redux';
-import Axios from 'axios';
-import createFormData from '../../helpers/FormData';
+
 
 class Post extends Component {
   constructor (props) {
@@ -22,10 +20,11 @@ class Post extends Component {
       name: '',
       description: '',
       typeName: '',
-      image: null,
+      photo: '',
     }
 
     this.sendImage = this.sendImage.bind(this);
+    this.renew = this.renew.bind(this);
   }
 
   submit () {
@@ -54,6 +53,7 @@ class Post extends Component {
   get action () {
     let {
       navigateToHome = () => {console.log(`Vừa nhấn quay trở lại màn hình Home`)},
+      openLibrary = () => {console.log(`Vừa nhấn đăng hình`)},
       emitInsertItem,
       onInsertItem,
     } = this.props;
@@ -61,6 +61,7 @@ class Post extends Component {
       navigateToHome,
       emitInsertItem,
       onInsertItem,
+      openLibrary,
     };
   }
 
@@ -83,12 +84,29 @@ class Post extends Component {
       visible = false,
       ownerName,
       token,
+      photo = '',
     } = this.props;
     return {
       visible,
       ownerName,
       token,
+      photo,
     };
+  }
+
+  renew () {
+    this.setState({
+      name: '',
+      description: '',
+      typeName: '',
+      photo: '',
+    })
+  }
+  backButton_onClick () {
+    let {
+      navigateToHome,
+    } =this.props;
+    navigateToHome();
   }
 
   onNameChange (text) {
@@ -108,30 +126,26 @@ class Post extends Component {
   }
 
   sendImage () {
-    const options = {
-      noData: true,
-    }
-    ImagePicker.launchImageLibrary(options, res => {
-    // console.log(`uri ${JSON.stringify(!!res)}`);
+    let {
+      openLibrary,
+    } = this.action;
 
-      if(!!res) {
-        this.setState({image: res},async () => {
-          try {
-            let response = await Axios.post('http://192.168.1.36:3000/',
-            createFormData(this.state.image, {}));
-            console.log(`Kết quả là: `,JSON.stringify(response))
-          } catch (sendErr) {
-            console.log(`Lỗi ở đây ${sendErr}`)
-          } 
-        });
-      }
-    })
+    openLibrary(
+      (res) => {
 
-    
+      this.setState({photo: res});},
+    );
   }
 
   get button () {
     return {
+      back: (
+        <TouchableOpacity 
+        style={{flex: 1}}
+        onPress={()=>{this.backButton_onClick()}}
+        ><Text> trở lại</Text>
+        </TouchableOpacity>
+      ),
       submit: (
         <TouchableOpacity 
         style={{flex: 1}}
@@ -173,8 +187,18 @@ class Post extends Component {
   }
 
   get image () {
+    let photo = this.state.photo;
+    console.log(`url photo là: ${JSON.stringify(photo)}`)
+
     return (
-      <Image source={{uri: !!this.state.image?this.state.image.uri:''}}/>
+      <Image
+        style = {{
+          flex: 2,
+          height: `100%`,
+          width: `100%`,
+        }} 
+        resizeMode = {'stretch'}
+        source={!!photo?{uri: photo}:require('../../img/default.png')}/>
     )
   }
 
@@ -183,6 +207,7 @@ class Post extends Component {
     return (
       <View 
         style={{flex: 1}}>
+        {this.button.back}
         {this.textInput.name}
         {this.textInput.typeName}
         {this.textInput.description}
@@ -213,6 +238,7 @@ class Post extends Component {
         transparent={false}
         visible={visible}
         onRequestClose={()=>{}}
+        onShow={()=> {this.renew()}}
         >
         {this.form}
       </Modal>
@@ -221,9 +247,11 @@ class Post extends Component {
 }
 
 const mapStateToProps = (state) => {
+
   return {
     ownerName: state.auth.name,
     token: state.auth.token,
+    photo: state.photo,
   }
 }
 
@@ -252,6 +280,13 @@ const mapDispatchToProps = (dispatch) => ({
         callback,
       )
   ),
+  openLibrary: (
+    success = (res) => {},
+    failed = (err) => {}) => dispatch(
+      openLibrary(
+        success,
+        failed,
+      )),
 })
 
 export default connect(

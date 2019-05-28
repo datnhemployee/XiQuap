@@ -141,7 +141,7 @@ class Info extends Component {
 
 
 const mapStateToProps = (state) => {
-  console.log(`state chỗ Info ${JSON.stringify(state)}`)
+  // console.log(`state chỗ Info ${JSON.stringify(state)}`)
 
   return {
     token: state.auth.token,

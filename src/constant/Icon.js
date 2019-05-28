@@ -23,18 +23,31 @@ const Size = {
 }
 const NameList = {
     default: 'message1',
-
+    clear_textInput: `closecircle`,
     message: 'message1',
 }
 
-const untapColor = Color.Navigation.untapped;
 
-export default {
-    Message: ({
-        size = Size.default,
-        color = Color.Gray,
-        }={}) => 
-        <AntDesign name={NameList.user} size={size} color={color}/>,
+class ClearText extends Component {
+    render () {
+        const {
+            size = Size.intermediate,
+            color = Color.White,
+            // style = {flex: 1},
+        } = this.props;
+        return (<AntDesign 
+            // style = {style}
+            name={NameList.clear_textInput} 
+            size= {size} 
+            color={color}
+        />)
+    }
+}
+    
+    
+    
+export {
+    ClearText,
 }
 
 export {

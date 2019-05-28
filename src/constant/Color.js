@@ -1,7 +1,9 @@
 const Default = {
     DarkGreen: '#1faa00',
     LightGreen: 'rgb(123, 237, 159)',
-    Red: 'rgb(255, 71, 87)',
+    DarkRed: '#c50e29',
+    Red: '#ff5252',
+    LightRed: '#ff867f',
     Blue: 'rgb(30, 144, 255)',
     Black: 'black',
     White: 'white',
