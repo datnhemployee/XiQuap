@@ -11,6 +11,11 @@ import AuthAction from '../../actions/Auth/AuthAction';
 import { connect } from 'react-redux';
 import { Codes } from '../../constant/Response';
 import socket from '../../../Configuration';
+import styles from './Register.styles'
+import SalmonGradientButton from '../../constant/SalmonGradientButton';
+import GrayGradientButton from '../../constant/GrayGradientButton';
+import {Font, Fonts} from '../../utils/Fonts';
+
 
 class Register extends Component {
   constructor (props) {
@@ -148,22 +153,21 @@ class Register extends Component {
     navigateToLogIn();
   }
 
-  
+
   get button () {
     return {
       register: (
-        <TouchableOpacity 
-          style={{flex:1}}
-          onPress={() => {this.buttonRegister_onClick()}}>
-          <Text >Đăng kí </Text>
-        </TouchableOpacity>
+        <SalmonGradientButton
+          onPress={() => {this.buttonRegister_onClick()}}
+          Name = {"Đăng Ký"}>
+        </SalmonGradientButton>
+
       ),
       back: (
-        <TouchableOpacity 
-          style={{flex:1}}
-          onPress={() => {this.buttonBack_onClick()}}>
-          <Text >Hủy</Text>
-        </TouchableOpacity>
+        <GrayGradientButton         
+          onPress={() => {this.buttonBack_onClick()}}
+          Name = {"Hủy Bỏ"}>
+        </GrayGradientButton>
       ),
     }
   }
@@ -172,38 +176,39 @@ class Register extends Component {
     return {
       username: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Tên tài khoản'}
           onChangeText={(text) => {this.onUsernameChange(text)}}/>
       ),
       password: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Mật khẩu'}
+          secureTextEntry={true}
           onChangeText={(text) => {this.onPasswordChange(text)}}/>
       ),
       name: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Tên '}
           onChangeText={(text) => {this.onNameChange(text)}}/>
       ),
       email: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Email'}
           onChangeText={(text) => {this.onEmailChange(text)}}/>
       ),
       phone: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           keyboardType={'phone-pad'}
           placeholder={'Số điện thoại'}
           onChangeText={(text) => {this.onPhoneChange(text)}}/>
       ),
       intro: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Giới thiệu'}
           onChangeText={(text) => {this.onIntroChange(text)}}/>
       ),
@@ -211,31 +216,69 @@ class Register extends Component {
   }
 
   get header () {
-    return <View/>
+    return <View style={styles.header}>
+      <Text style = {{
+        flex:1,
+        textAlign: 'center', 
+        textAlignVertical: 'center',
+        fontSize: 20,
+        color: '#B8EC56',
+        fontFamily: Fonts.Dancing,
+    }}>
+      Đăng Kí
+      </Text>
+    </View>
   }
   get body () {
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.body}>
         {this.textInput.username}
         {this.textInput.password}
         {this.textInput.name}
         {this.textInput.email}
         {this.textInput.phone}
         {this.textInput.intro}
-      </View>
-    )
-  }
-  get footer () {
-    return (
-      <View style={{flex: 1}}>
         {this.button.register}
         {this.button.back}
       </View>
     )
   }
+  get footer () {
+    return (
+      <View style={{flex: 1, flexDirection: 'row', backgroundColor:'#92D6D9'}}>
+        <View style={{flex :2}}></View>
+        <View style={{flex:1, flexDirection: 'row'}}
+        >
+          <TouchableOpacity style = {{
+            alignSelf:'center',
+            
+            }}>
+            <Text style ={{ 
+              color :'#0E6F73',
+              fontSize: 10,
+              marginRight:10,
+              borderBottomColor:"#0E6F73",
+              borderBottomWidth:1,
+            }}>Term of Service</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style = {{alignSelf:'center'}}>
+            <Text style ={{alignSelf:'center',
+              color :'#0E6F73',
+              borderBottomColor:"#0E6F73",
+              borderBottomWidth:1,
+              fontSize: 10
+              }}>Credit</Text>
+          </TouchableOpacity>
+
+        </View>
+        
+      </View>
+    )
+  }
   get form () {
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.container}>
         {this.header}
         {this.body}
         {this.footer}

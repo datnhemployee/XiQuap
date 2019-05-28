@@ -14,7 +14,10 @@ import { connect } from 'react-redux';
 import { 
   noBlankSpace, 
 } from '../../helpers/StringHelper';
-
+import LinearGradient from 'react-native-linear-gradient';
+import SalmonGradientButton from '../../constant/SalmonGradientButton';
+import GrayGradientButton from '../../constant/GrayGradientButton';
+import {Fonts} from '../../utils/Fonts';
 class LogIn extends Component {
   constructor (props) {
     super(props);
@@ -172,18 +175,19 @@ class LogIn extends Component {
   get button () {
     return {
       logIn: (
-        <TouchableOpacity 
-          style={{flex:1}}
-          onPress={() => {this.buttonLogIn_onClick()}}>
-          <Text >Đăng nhập </Text>
-        </TouchableOpacity>
+        <SalmonGradientButton
+          
+          onPress={() => {this.buttonLogIn_onClick()}}
+          Name= {'Đăng Nhập'}>
+        </SalmonGradientButton>
       ),
+      
       register: (
-        <TouchableOpacity 
-          style={{flex:1}}
-          onPress={() => {this.buttonRegister_onClick()}}>
-          <Text >Đăng kí </Text>
-        </TouchableOpacity>
+
+        <GrayGradientButton 
+        onPress={() => {this.buttonRegister_onClick()}}
+        Name={'Đăng Kí'}
+        ></GrayGradientButton>                                                        
       )
     }
   }
@@ -192,14 +196,15 @@ class LogIn extends Component {
     return {
       username: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Tên tài khoản'}
           onChangeText={(text) => {this.onUsernameChange(text)}}/>
       ),
       password: (
         <TextInput 
-          style={{flex: 1}}
+          style={styles.textinput}
           placeholder={'Mật khẩu'}
+          secureTextEntry={true}
           onChangeText={(text) => {this.onPasswordChange(text)}}/>
       ),
     }
@@ -208,8 +213,35 @@ class LogIn extends Component {
   get footer () {
     return (
       <View style={styles.footer.container}>
-        {this.button.logIn}
-        {this.button.register}
+      <View style={{flex: 1, flexDirection: 'row', backgroundColor:'#92D6D9'}}>
+        <View style={{flex :2}}></View>
+        <View style={{flex:1, flexDirection: 'row'}}
+        >
+          <TouchableOpacity style = {{
+            alignSelf:'center',
+            
+            }}>
+            <Text style ={{ 
+              color :'#0E6F73',
+              fontSize: 10,
+              marginRight:10,
+              borderBottomColor:"#0E6F73",
+              borderBottomWidth:1,
+            }}>Term of Service</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style = {{alignSelf:'center'}}>
+            <Text style ={{alignSelf:'center',
+              color :'#0E6F73',
+              borderBottomColor:"#0E6F73",
+              borderBottomWidth:1,
+              fontSize: 10
+              }}>Credit</Text>
+          </TouchableOpacity>
+
+        </View>
+        
+      </View>
       </View>
     )
   }
@@ -221,14 +253,24 @@ class LogIn extends Component {
         {this.textInput.username}
         {this.notify.password}
         {this.textInput.password}
+        {this.button.logIn}
+        {this.button.register}
       </View>
     )
   }
 
   get header () {
     return (
-      <View style={[styles.header.container,{borderWidth: 2}]}>
-
+      <View style={[styles.header.container]}>  
+          <Text style={{ 
+          flex:1,
+          textAlign: "center",  
+          fontSize:40,
+          textAlignVertical:"center",
+          fontFamily: Fonts.Dancing,
+          color:'#FFAEAB'}}>
+          XiQuap
+          </Text>       
       </View>
     )
   }
