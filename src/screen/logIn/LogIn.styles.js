@@ -34,27 +34,5 @@ export default styles = {
         borderBottomColor: '#9ED632',
         borderBottomWidth: 1,
     },
-
-    btnlogin: {
-        alignSelf: 'stretch',
-        alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#66B032',
-        marginTop:20,
-    },
-    btnreg: {
-        
-        alignSelf: 'stretch',
-          
-    },
-    gradient: {
-        
-        alignSelf: 'stretch',
-        alignItems:'center',
-        justifyContent: 'center',
-        padding: 10,
-        marginTop: 10,
-        borderRadius: 5,  
-
     }
 }
