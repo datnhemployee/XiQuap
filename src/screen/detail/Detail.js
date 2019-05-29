@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  Image,
 } from 'react-native';
 import CardPost from '../../components/card/CardPost';
 import ExchangeCard from '../../components/exchangeCard/ExchangeCard';
@@ -13,8 +14,13 @@ import ExchangeCard from '../../components/exchangeCard/ExchangeCard';
 import { Codes } from '../../constant/Response';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
+import styles from './Detail.styles';
 
 import { connect } from 'react-redux';
+import { BackIcon, StarIcon, StarOuterIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import { interfaceDeclaration } from '@babel/types';
+import Typeface from '../../constant/Font';
 
 class Detail extends Component {
   constructor (props) {
@@ -101,29 +107,87 @@ class Detail extends Component {
     this.setState({});
   }
 
+  get approvedCard () {
+    let {
+      item,
+    } = this.dependencies;
+    if (!item) {
+      return (<View />)
+    }
+    if (!item.vendee) {
+      return (<View />)
+    }
+    // const _style = styles.approvedCard;
+    return (
+      <TouchableOpacity style = {{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'flex-end',
+        flexDirection: 'row',
+        marginBottom: 10,
+        }}>
+        <View style={{flex: 1}}>
+          <Text style={{
+            flex: 1,
+            ...Typeface.overline,
+            textAlign: `right`,
+            textAlignVertical: `center`,
+            }}>ĐÃ CHẤP NHẬN</Text>
+          {this.label.vendeeName}
+          {this.label.vendeeTotalStar}
+        </View>
+        <View 
+          style = {{
+            height: 100,
+            width: 100, 
+            borderRadius: 1000, 
+            marginLeft: 10,
+            overflow: 'hidden'}}>
+          <Image 
+            style = {{
+              flex: 1,
+              height: `100%`,
+              width: `100%`,
+            }} 
+            resizeMode = {'stretch'}
+            source = {
+              !!item.vendee.avatar ?
+              {uri: item.vendee.avatar}
+              :require(`../../img/default.png`)}
+            />
+        </View>
+      </TouchableOpacity>
+    )
+  }
+
   get label () {
     let {
       item,
     } = this.dependencies;
-
+    const _style = styles.label;
     return {
       vendeeTotalStar:!!item.vendee? 
-        (<Text >{item.vendee.totalStar} sao</Text>)
-        :(<Text > Lỗi khi tìm sao </Text>),
+        (<Text style={_style.totalStar}>{item.vendee.totalStar} sao</Text>)
+        :(<View/>),
       vendeeName: !!item.vendee? 
-        (<Text > Đã chấp nhận {item.vendee.name}</Text>)
-        :(<Text > Chưa chấp nhận </Text>),
+        (<Text style={_style.approveText}> {item.vendee.name}</Text>)
+        :(<Text style={_style.waittingText}> Đang chờ trao đổi </Text>),
       vendeeGiveStar: !!item.giveStar? 
-        (<Text > Được 1 sao </Text>)
-        :(<Text > Chưa tặng sao </Text>),
+        (<StarIcon color={Color.Red}/>)
+        :(<StarOuterIcon color={Color.Gray}/>),
     }
   }
 
   get button () {
+    const _style = styles.button;
     return {
       back: (<TouchableOpacity 
+        style={_style.back}
         onPress = {this.onBackButtonClick}>
-        <Text>Trở lại</Text>
+        <BackIcon 
+            color={Color.Gray}/>
+        <Text 
+          style={_style.backText}> Chi tiết </Text>
       </TouchableOpacity>),
     }
   }
@@ -187,11 +251,10 @@ class Detail extends Component {
     // console.log(`item header ${JSON.stringify(item)}`);
     return (
       <View>
-        {this.button.back}
         {(!item._id)? <Text >Thông tin rỗng </Text>
         :<CardPost
             height = {500}
-
+            isBrief = {false}
             id = { item._id}
             ownerId = {item.owner._id}
             ownerName = {item.owner.name}
@@ -210,9 +273,7 @@ class Detail extends Component {
   get body () {
     return (
       <View  style={{flex: 1}}>
-        {this.label.vendeeName}
-        {this.label.vendeeGiveStar}
-        {this.label.vendeeTotalStar}
+        {this.approvedCard}
       </View>
     )}
   get footer () {
@@ -224,11 +285,14 @@ class Detail extends Component {
   
   get form () {
     return (
-      <ScrollView style={{flex: 1}}>
-        {this.header}
-        {this.body}
-        {this.footer}
-      </ScrollView>
+      <View style= {{flex: 1}}>
+        {this.button.back}
+        <ScrollView style={{flex: 1}}>
+          {this.header}
+          {this.body}
+          {this.footer}
+        </ScrollView>
+      </View>
     )
   }
 

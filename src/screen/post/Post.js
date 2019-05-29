@@ -3,15 +3,26 @@ import {
   View, 
   Text,
   Modal,
-  TextInput,
   TouchableOpacity,
   Image,
+  Picker,
+  Dimensions,
+  ScrollView,
 } from 'react-native';
+import MyTextInput from '../../components/myTextInput/MyTextInput';
+
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import { openLibrary } from '../../actions/PhotoAction';
 import { connect } from 'react-redux';
+import { BackIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import styles from './Post.styles';
+import TypeItemAction from '../../actions/Type/TypeItemAction';
 
+const {
+  height,
+} = Dimensions.get('screen');
 
 class Post extends Component {
   constructor (props) {
@@ -19,12 +30,15 @@ class Post extends Component {
     this.state = {
       name: '',
       description: '',
-      typeName: '',
+      typeName: 'Sách vở',
       photo: '',
+      type: [],
     }
 
     this.sendImage = this.sendImage.bind(this);
     this.renew = this.renew.bind(this);
+    this.onNameClear = this.onNameClear.bind(this);
+    this.onDescriptionClear = this.onDescriptionClear.bind(this);
   }
 
   submit () {
@@ -36,14 +50,12 @@ class Post extends Component {
       ownerName,
       token,
     } =  this.dependencies;
+      
     emitInsertItem({
-      // name: this.state.name,
-      // description: this.state.description,
-      // typeName: this.state.typeName,
-
-      name: `Iphone9X`,
-      description: `Mắc quá`,
-      typeName: `khác`,
+      name: this.state.name,
+      description: this.state.description,
+      typeName: this.state.typeName,
+      mainPicture: this.state.photo,
       ownerName: ownerName,
       token: token,
     });
@@ -56,12 +68,14 @@ class Post extends Component {
       openLibrary = () => {console.log(`Vừa nhấn đăng hình`)},
       emitInsertItem,
       onInsertItem,
+      onGetAllType = () => console.log(` Chờ lấy toàn bộ loại vật phẩm từ hệ thống`),
     } = this.props;
     return {
       navigateToHome,
       emitInsertItem,
       onInsertItem,
       openLibrary,
+      onGetAllType,
     };
   }
 
@@ -69,8 +83,15 @@ class Post extends Component {
     let {
       onInsertItem,
       navigateToHome,
+      onGetAllType,
     } = this.action;
         console.log(`Vừa đăng: ${JSON.stringify(navigateToHome)}`);
+
+      onGetAllType(
+        (res) => {
+          this.setState({type: res.content.list});
+        }
+      )
       onInsertItem(
         (res) => {
           console.log(`Vừa đăng: ${JSON.stringify(res)}`);
@@ -85,12 +106,14 @@ class Post extends Component {
       ownerName,
       token,
       photo = '',
+      type = null,
     } = this.props;
     return {
       visible,
       ownerName,
       token,
       photo,
+      type,
     };
   }
 
@@ -125,64 +148,99 @@ class Post extends Component {
     this.submit();
   }
 
+  onNameClear () {
+    this.setState({name: ''});
+  }
+
+  onDescriptionClear () {
+    this.setState({description: ''});
+  }
+
   sendImage () {
     let {
       openLibrary,
     } = this.action;
-
     openLibrary(
       (res) => {
-
       this.setState({photo: res});},
     );
   }
 
+  get picker () {
+    const type = this.state.type;
+    if (!type || type.length === 0) return (<View />);
+
+    const _style = styles.picker;
+    return (
+        <Picker 
+          style = {_style.container}
+          onValueChange={(val) => {this.setState({typeName: val})}}
+          selectedValue = {this.state.typeName}
+          itemStyle= {_style.item}>
+          {type.map(val => <Picker.Item 
+              key = {`Picker_${val.name}`}
+              value = {val.name}
+              label = {val.name}
+            />)}
+        </Picker>
+      )
+  }
+
+  get label () {
+    const _style = styles.label;
+    return {
+      screen: (<Text style={_style.screen}> Bài viết </Text>)
+    }
+  }
+
   get button () {
+    const _style = styles.button;
     return {
       back: (
         <TouchableOpacity 
         style={{flex: 1}}
         onPress={()=>{this.backButton_onClick()}}
-        ><Text> trở lại</Text>
+        ><BackIcon 
+          color={ Color.Gray}/>
         </TouchableOpacity>
       ),
       submit: (
         <TouchableOpacity 
-        style={{flex: 1}}
+        style={_style.submit.button}
         onPress={()=>{this.submitButton_onClick()}}
-        ><Text>Đăng</Text>
+        ><Text style={_style.submit.text}>ĐĂNG</Text>
         </TouchableOpacity>
       ),
       image: (
         <TouchableOpacity 
-        style={{flex: 1}}
+        style={{height: 200}}
         onPress={()=>{this.sendImage()}}
-        ><Text>Gửi hình</Text>
+        >
+          <Text style={_style.image.text}>CHẠM ĐỂ CHỌN HÌNH</Text>
+          {this.image}
         </TouchableOpacity>
       ),
     }
   }
 
   get textInput () {
+    const _style = styles.textInput;
     return {
       name: (
-      <TextInput 
-        style={{flex: 1}}
-        placeholder={'Tên vật trao đổi'}
-        onChangeText={(text)=>{this.onNameChange(text)}}
-      />),
+        <MyTextInput 
+          style={_style.name}
+          onClear = {this.onNameClear}
+          placeholder={'Tên vật trao đổi'}
+          onChangeText={(text) => {this.onNameChange(text)}}/>
+      ),
       description: (
-        <TextInput 
-          style={{flex: 1}}
-          placeholder={'Mô tả'}
-        onChangeText={(text)=>{this.onDescriptionChange(text)}}
-        />),
-      typeName: (
-        <TextInput 
-          style={{flex: 1}}
-          placeholder={'Loại vật trao đổi'}
-        onChangeText={(text)=>{this.onTypeNameChange(text)}}
-        />),
+        <MyTextInput 
+          style={_style.description}
+          onClear = {this.onDescriptionClear}
+          multiline = {true}
+          placeholder={'Nội dung trao đổi '}
+          onChangeText={(text) => {this.onDescriptionChange(text)}}/>
+        ),
     }
   }
 
@@ -202,16 +260,21 @@ class Post extends Component {
     )
   }
 
-  get header () {return <View/>}
+  get header () {
+    return (
+    <View
+      style={{flex: 1, flexDirection: `row`}}>
+        {this.button.back}
+        {this.label.screen}
+    </View>) }
   get body () {
     return (
       <View 
-        style={{flex: 1}}>
-        {this.button.back}
+        style={{flex: 8}}>
         {this.textInput.name}
         {this.textInput.typeName}
         {this.textInput.description}
-        {this.image}
+        {this.picker}
         {this.button.image}
         {this.button.submit}
       </View>
@@ -221,9 +284,11 @@ class Post extends Component {
   
   get form () {
     return (
-      <View style={{flex: 1}}>
+
+      <ScrollView style={{flex: 1, padding: 10}}>
+        {this.header}
         {this.body}
-      </View>
+      </ScrollView>
     )
   }
 
@@ -252,6 +317,7 @@ const mapStateToProps = (state) => {
     ownerName: state.auth.name,
     token: state.auth.token,
     photo: state.photo,
+    type: state.type,
   }
 }
 
@@ -275,6 +341,17 @@ const mapDispatchToProps = (dispatch) => ({
     ) => dispatch(
       ExchangeAction.on(
         ExchangeActionType.onInsertItem
+      ).inject(
+        data,
+        callback,
+      )
+  ),
+  onGetAllType: (
+    data,
+    callback = (res) => {},
+    ) => dispatch(
+      TypeItemAction.on(
+        TypeItemAction.onGetAll
       ).inject(
         data,
         callback,

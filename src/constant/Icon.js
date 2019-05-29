@@ -25,29 +25,104 @@ const NameList = {
     default: 'message1',
     clear_textInput: `closecircle`,
     message: 'message1',
+    exchange: 'home',
+    point: 'gift',
+    info: 'user',
+    waitting: `shoppingcart`,
+    selling: `isv`,
+    add: `plus`,
+    swap: `retweet`,
+    heart: `hearto`,
+    back: `left`,
+    star_outer: `staro`,
+    star: `star`,
 }
 
 
-class ClearText extends Component {
-    render () {
+class MyAntDesign extends Component {
+    render (iconName = NameList.default) {
         const {
             size = Size.intermediate,
             color = Color.White,
             // style = {flex: 1},
         } = this.props;
         return (<AntDesign 
-            // style = {style}
-            name={NameList.clear_textInput} 
+            style = {{
+                flex: 1,
+                // borderWidth: 1, 
+                textAlign: 'center', 
+                textAlignVertical: 'center',
+            }}
+            name={iconName} 
             size= {size} 
             color={color}
         />)
     }
 }
-    
+
+class ClearText extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.clear_textInput)}
+}
+class ExchangeIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.exchange)}
+}
+class InfoIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.info)}
+}
+class PointIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.point)}
+}
+class SellingIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.selling)}
+}
+class WaittingIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.waitting)}
+}
+class AddIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.add)}
+}
+class SwapIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.swap)}
+}
+class HeartIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.heart)}
+}
+class BackIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.back)}
+}
+class StarOuterIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.star_outer)}
+}   
+class StarIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.star)}
+}      
     
     
 export {
     ClearText,
+    ExchangeIcon,
+    PointIcon,
+    InfoIcon,
+    SellingIcon,
+    WaittingIcon,
+    AddIcon,
+    SwapIcon,
+    HeartIcon,
+    BackIcon,
+    StarIcon,
+    StarOuterIcon,
 }
 
 export {

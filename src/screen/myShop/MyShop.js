@@ -13,6 +13,9 @@ import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import LocalStorage from '../../storage/LocalStorage';
 import CardPost from '../../components/card/CardPost';
+import { BackIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import styles from './MyShop.styles';
 
 class MyShop extends Component {
   constructor (props) {
@@ -169,8 +172,9 @@ class MyShop extends Component {
   }
 
   get label () {
+    const _style = styles.label;
     return {
-      screen: (<Text style={{flex: 1}}>Sạp của tôi</Text>)
+      screen: (<Text style={_style.screen}>Sạp của tôi</Text>)
     }
   }
 
@@ -178,12 +182,14 @@ class MyShop extends Component {
     let {
       navigateToHome,
     } = this.action;
+    const _style = styles.button;
     return {
       back: (
         <TouchableOpacity 
-          style={{flex: 1}}
+          style={_style.back}
           onPress={()=> {navigateToHome()}}>
-          <Text>Trở lại </Text>
+          <BackIcon 
+            color={Color.Gray}/>
         </TouchableOpacity>
       )
     }
@@ -191,7 +197,7 @@ class MyShop extends Component {
 
   get header () {
     return (
-      <View style={{flex: 1}}>
+      <View style={styles.header}>
         {this.button.back}
         {this.label.screen}
       </View>
@@ -240,15 +246,6 @@ class MyShop extends Component {
         onEndReachedThreshold={0.5}
         keyExtractor={(item,index)=>`PostIndex${index}`}
       />
-      </View>
-    )
-  }
-
-  get header () {
-    return (
-      <View style={{flex: 1}}>
-        {this.button.back}
-        {this.label.screen}
       </View>
     )
   }

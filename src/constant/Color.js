@@ -8,6 +8,8 @@ const Default = {
     Black: 'black',
     White: 'white',
     Gray: '#757575',
+    LighGray: `#fafafa`,
+    palmRed: `#ffebee`,
 }
 
 const Navigation = {

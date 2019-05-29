@@ -5,12 +5,17 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
 import {ImageSize} from '../../constant/Image';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
+import styles from './ExchangeCard.styles';
 
 import { connect } from 'react-redux';
+import Typeface from '../../constant/Font';
+import { ExchangeIcon, SwapIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
 
 class ExchangeCard extends Component {
   constructor (props) {
@@ -52,7 +57,7 @@ class ExchangeCard extends Component {
 
   get dependencies () {
     let {
-      height = 700,
+      height = 150,
 
       name = '',
       id = '',
@@ -101,11 +106,11 @@ class ExchangeCard extends Component {
       vendeeName,
     } = this.dependencies;
     // console.log(`ExchangeCard label: ${JSON.stringify(this.dependencies)}`)
-
+    const _style = styles.label;
     return {
-      name: (<Text style={{flex: 1,borderWidth: 1}}>{name}</Text>),
-      description: (<Text style={{flex: 1,borderWidth: 1}}>{description}</Text>),
-      vendeeName: (<Text style={{flex: 1,borderWidth: 1}}>@{vendeeName}</Text>),
+      name: (<Text style={_style.name}>{name}</Text>),
+      description: (<ScrollView style={{flex: 1}}><Text style={_style.description}>{description}</Text></ScrollView> ),
+      vendeeName: (<Text style={_style.vendeeName}>{Typeface.toCase( vendeeName,Typeface.type.overline)}</Text>),
     }
   }
 
@@ -117,7 +122,28 @@ class ExchangeCard extends Component {
     } = this.dependencies; 
 
     return {
-      ownerAvatar: (<Image style={ImageSize.huge} source={{uri: photoUrl}}/>),
+      item: (
+        <View 
+        style = {{
+          flex: 1,
+          borderRadius: 20, 
+          overflow: 'hidden',
+          padding: 10,
+          }}>
+        <Image 
+          style = {{
+            flex: 1,
+            height: `100%`,
+            width: `100%`,
+          }} 
+          resizeMode = {'stretch'}
+          source={
+            !!photoUrl?
+            {uri: photoUrl}
+            :require('../../img/default.png')}/>
+        </View>
+
+        ),
     }
   }
 
@@ -125,7 +151,9 @@ class ExchangeCard extends Component {
     return {
       vendee: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{flex: 1,
+            // borderWidth: 1
+          }}
           onPress={()=>{}}
           >
           {this.label.vendeeName}
@@ -133,10 +161,16 @@ class ExchangeCard extends Component {
       ),
       approve: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 1,
+            // borderWidth: 1,
+            flexDirection: 'row',
+          }}
           onPress={()=>{this.approve()}}
           >
-          <Text>Đồng ý</Text>
+          <SwapIcon 
+            color = {Color.Gray}/>
+          <Text style={{flex: 3,...Typeface.button,textAlign: 'left',textAlignVertical: 'center'}}>TRAO ĐỔI</Text>
         </TouchableOpacity>
       ),
     }
@@ -148,12 +182,27 @@ class ExchangeCard extends Component {
 
   get body () {
     return (
-    <View style={{flex: 1,borderWidth: 1}}>
-      {this.button.vendee}
-      {this.label.name}
-      {this.label.description}
-      {this.button.approve}
-    </View>)
+    <View style={{
+      flex: 1,
+      // borderWidth: 1
+      flexDirection: 'row',
+      }}>
+      <View style={{
+          flex: 1,
+          // borderWidth: 1
+        }}>
+        {this.image.item}
+      </View>
+      <View style={{
+          flex: 1,
+          // borderWidth: 1
+        }}>
+        {this.button.vendee}
+        {this.label.name}
+        {this.label.description}
+        {this.button.approve}
+      </View>
+    </View>);
   }
 
   get footer () {
@@ -161,7 +210,10 @@ class ExchangeCard extends Component {
   }
   get form () {
     return (
-      <View style={{flex: 1,borderWidth: 1}}>
+      <View style={{
+        flex: 1,
+        // borderWidth: 1,
+        }}>
         {this.header}
         {this.body}
         {this.footer}
@@ -172,10 +224,11 @@ class ExchangeCard extends Component {
   render() {
     let {
       height,
+      description,
     } = this.dependencies;
-
+    const _height = height + (description.length % 100);
     return (
-      <View style={{height: height}}>
+      <View style={{height: _height, padding: 10}}>
         {this.form}
       </View>
     );

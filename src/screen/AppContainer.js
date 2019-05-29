@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import LogIn from './logIn/LogIn';
 import Home from './home/Home';
-import AppContainerStyles from './AppContainer.styles';
 import Navigation from '../constant/Navigation';
 import NavigationAction from '../actions/NavigationAction';
 import Register from './register/Register';
@@ -31,6 +30,9 @@ import LocalStorage from '../storage/LocalStorage';
 import MessageBox from '../components/MessageBox';
 import AuthAction from '../actions/Auth/AuthAction';
 import AuthActionType from '../actions/Auth/AuthActionType';
+import styles from './AppContainer.styles';
+import Color from '../constant/Color';
+import { ExchangeIcon, InfoIcon, PointIcon } from '../constant/Icon';
 
 class AppContainer extends Component {
   constructor (props) {
@@ -192,7 +194,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <LogIn 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.logIn}
         navigateToHome={this.navigateToHome}
         navigateToRegister={this.navigateToRegister}
@@ -206,7 +208,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <MyShop 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.myShop}
         navigateToHome={this.navigateToHome}
         navigateToDetail = {this.navigateToDetail}
@@ -222,7 +224,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <Waitting 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.waitting}
         navigateToHome={this.navigateToHome}
         navigateToDetail = {this.navigateToDetail}
@@ -236,7 +238,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <MyStock 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.myStock}
         navigateToStock={this.navigateToStock}
         navigateToStockDetail = {this.navigateToStockDetail}
@@ -250,7 +252,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <Bought 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.bought}
         navigateToStock={this.navigateToStock}
         navigateToStockDetail = {this.navigateToStockDetail}
@@ -261,21 +263,18 @@ class AppContainer extends Component {
   navigationIcon (
     visible,
     content,
+    icon,
     navigate = () => console.log(` Vừa bấm chuyển màn hình `)) {
-    
+    const _style = styles.navigation;
     return (
       <TouchableOpacity 
-        style={[
-          AppContainerStyles,
-          visible?{
-            borderBottomColor: 'green',
-            borderBottomWidth: 1,
-          }:{}]}
+        style={_style.button}
           onPress={navigate}>
+        {icon}
         <Text style={[
-          AppContainerStyles,
+          _style.icon,
           visible?{
-            color: 'green',
+            color: Color.Red,
           }:{}]}>{content}</Text>
       </TouchableOpacity>
     )
@@ -289,7 +288,9 @@ class AppContainer extends Component {
     let visible = navigation === Navigation.home;
     return this.navigationIcon(
       visible,
-      ` Màn hình chính `,
+      ` Đổi đồ `,
+      (<ExchangeIcon 
+        color = {visible?Color.Red:Color.Gray}/>),
       this.navigateToHome
     );
   } 
@@ -302,7 +303,9 @@ class AppContainer extends Component {
     let visible = navigation === Navigation.stock;
     return this.navigationIcon(
       visible,
-      ` Quà tặng `,
+      ` Đổi điểm `,
+      (<PointIcon 
+        color = {visible?Color.Red:Color.Gray}/>),
       this.navigateToStock
     );
   } 
@@ -316,14 +319,17 @@ class AppContainer extends Component {
     return this.navigationIcon(
       visible,
       ` Tôi `,
+      (<InfoIcon 
+        color = {visible?Color.Red:Color.Gray}/>),
       this.navigateToInfo
     );
   } 
   
   get navigationBar () {
+    const _style = styles.navigation;
     return (
       <View 
-      style={AppContainerStyles}>
+      style={_style.bar}>
         {this.navigationHomeIcon}
         {this.navigationStockIcon}
         {this.navigationInfoIcon}
@@ -335,7 +341,7 @@ class AppContainer extends Component {
     
     return (
       <Info 
-        style={AppContainerStyles}
+        style={styles.container}
         />
     );
   }
@@ -344,7 +350,7 @@ class AppContainer extends Component {
     return (
       <Home 
         // key = "ViewPagerAndroid_Home"
-        style={AppContainerStyles}
+        style={styles.container}
         navigateToLogIn={this.navigateToLogIn}
         navigateToPost={this.navigateToPost}
         navigateToDetail={this.navigateToDetail}
@@ -360,7 +366,7 @@ class AppContainer extends Component {
     return (
       <Stock 
         // key = "ViewPagerAndroid_Home"
-        style={AppContainerStyles}
+        style={styles.container}
         navigateToLogIn={this.navigateToLogIn}
         navigateToInfo={this.navigateToInfo}
         navigateToAddStock = {this.navigateToAddStock}
@@ -386,9 +392,7 @@ class AppContainer extends Component {
         
         onRequestClose={()=>{}}>
         <View 
-          style={AppContainerStyles}>
-          {this.navigationInfoBar}
-          {this.navigationBar}
+          style={styles.container}>
           <ViewPagerAndroid 
             style={{flex: 8}}
             initialPage={0}
@@ -396,20 +400,21 @@ class AppContainer extends Component {
             onPageSelected = {(e) => {this.onNavigateAtHome(e.nativeEvent.position)}}>
               <View 
                 key = "ViewPagerAndroid_Home"
-                style={AppContainerStyles}>
+                style={styles.container}>
                 {this.homeForm}
               </View>
               <View 
                 key = "ViewPagerAndroid_Stock"
-                style={AppContainerStyles}>
+                style={styles.container}>
                 {this.stockForm}
               </View>
               <View 
                 key = "ViewPagerAndroid_Info"
-                style={AppContainerStyles}>
+                style={styles.container}>
                 {this.infoForm}
               </View>
           </ViewPagerAndroid>
+          {this.navigationBar}
         </View>
       </Modal>
       
@@ -422,7 +427,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <Post 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.post}
         navigateToHome={this.navigateToHome}
         />
@@ -435,7 +440,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <AddStock 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.addStock}
         navigateToStock={this.navigateToStock}
         />
@@ -448,7 +453,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <StockDetail 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.stockDetail}
         navigateToStock={this.navigateToStock}
         />
@@ -463,7 +468,7 @@ class AppContainer extends Component {
     return (
       
       <Register 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.register}
         navigateToLogIn={this.navigateToLogIn}
         navigateToHome={this.navigateToHome}
@@ -477,7 +482,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <Exchange 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.exchange}
         navigateToHome={this.navigateToHome}
         navigateToInfo={this.navigateToInfo}
@@ -493,7 +498,7 @@ class AppContainer extends Component {
     } = this.dependencies;
     return (
       <ChatBox 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.register}
         navigateToHome={this.navigateToHome}
         navigateToInfo={this.navigateToInfo}
@@ -508,7 +513,7 @@ class AppContainer extends Component {
     return (
       
       <Detail 
-        style={AppContainerStyles}
+        style={styles.container}
         visible={navigation === Navigation.detail}
         navigateToHome={this.navigateToHome}
         navigateToInfo={this.navigateToInfo}
@@ -524,7 +529,7 @@ class AppContainer extends Component {
     } = this.dependencies;
 
     return (
-      <View style={AppContainerStyles}>
+      <View style={styles.container}>
         {this.logInScreen}
         {this.homeScreen} 
         {this.registerScreen}

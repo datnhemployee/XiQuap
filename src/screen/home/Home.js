@@ -5,6 +5,7 @@ import {
   Modal,
   TouchableOpacity,
   FlatList,
+  Image,
 } from 'react-native';
 import CardPost from '../../components/card/CardPost';
 
@@ -15,6 +16,10 @@ import MessageBox from '../../components/MessageBox';
 import LocalStorage from '../../storage/LocalStorage';
 
 import { connect } from 'react-redux';
+import { AddIcon, WaittingIcon, SellingIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import TypeItemAction from '../../actions/Type/TypeItemAction';
+import TypeItemActionType from '../../actions/Type/TypeItemActionType';
 
 class Home extends Component {
   constructor (props) {
@@ -52,6 +57,7 @@ class Home extends Component {
       navigateToWaitting = () => {console.log(`Vừa bấm chuyển sang màn hình vật chờ trao đổi`)},
       
       getMore = () => {console.log(`Đang lấy thêm dữ liệu`)},
+      getAllType = () => {console.log(`Đang lấy thêm toàn bộ loại vật phẩm`)},
       onGetMore = () => {},
       onGiveLike = () => {},
       onExchange = () => {},
@@ -65,6 +71,7 @@ class Home extends Component {
       navigateToExchange,
       navigateToMyShop,
       navigateToWaitting,
+      getAllType,
 
       getMore,
       onGetMore,
@@ -189,8 +196,10 @@ class Home extends Component {
   postButton_onClick () {
     let {
       navigateToPost,
+      getAllType,
     } = this.action;
-    navigateToPost();
+    getAllType({},() => {},
+    () => {navigateToPost();})
   }
   shopButton_onClick () {
     let {
@@ -209,36 +218,50 @@ class Home extends Component {
     return {
       post: (
         <TouchableOpacity 
-          style={{flex: 1}}
+          style={{flex: 1, justifyContent: 'center', alignContent: 'flex-start'}}
           onPress={()=>{this.postButton_onClick()}}
           >
-          <Text>Thêm bài viết</Text>
+          <AddIcon color={Color.Black}/>
         </TouchableOpacity>
       ),
       shop: (
         <TouchableOpacity 
-          style={{flex: 1}}
+          style={{flex: 1, justifyContent: 'center', alignContent: 'flex-end'}}
           onPress={()=>{this.shopButton_onClick()}}
           >
-          <Text>Sạp của tôi</Text>
+          <SellingIcon color={Color.Black}/>
         </TouchableOpacity>
       ),
       wait: (
         <TouchableOpacity 
-          style={{flex: 1}}
+          style={{flex: 1, justifyContent: 'center', alignContent: 'flex-start'}}
           onPress={()=>{this.waitButton_onClick()}}
           >
-          <Text>Giỏ chờ</Text>
+          <WaittingIcon color={Color.Black}/>
         </TouchableOpacity>
       )
     }
   }
   get header () {
     return (
-    <View style={{flex: 1}}>
-      {this.button.post}
-      {this.button.shop}
-      {this.button.wait}
+    <View style={{flex: 1, flexDirection: 'row', backgroundColor: Color.LighGray}}>
+        {this.button.shop}
+        <View style={{
+          flex: 5,
+          padding: 10,
+          }}>
+          <Image 
+          style={{
+            flex: 1,
+            width: `100%`,
+            height: `100%`,
+            }}
+          resizeMode = {'contain'}
+          source = {require('../../img/name.png')}
+          />
+        </View>
+        {this.button.wait}
+        {this.button.post}
     </View>)
   }
 
@@ -288,7 +311,7 @@ class Home extends Component {
   }
   get form () {
     return (
-      <View style={{flex: 1}}>
+      <View style={{flex: 1, backgroundColor: Color.LighGray}}>
         {this.header}
         {this.body}
         {this.footer}
@@ -325,8 +348,19 @@ const mapDispatchToProps = (dispatch) => ({
         next
       ),
   ),
-  
-  
+  getAllType:  (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    TypeItemAction.emit(
+        TypeItemActionType.emitGetAll,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
 
   onGetMore: (
     callback = (res)=>{},

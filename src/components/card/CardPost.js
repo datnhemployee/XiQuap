@@ -13,6 +13,9 @@ import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 
 import { connect } from 'react-redux';
 import { options } from '../../services/API/PostDocument';
+import Color from '../../constant/Color';
+import styles from './CardPost.styles';
+import { SwapIcon, ExchangeIcon, HeartIcon } from '../../constant/Icon';
 
 class CardPost extends Component {
   constructor (props) {
@@ -68,6 +71,7 @@ class CardPost extends Component {
       description = '',
       totalLike = 0,
       totalItem = 0,
+      isBrief = true,
 
       token = '',
     } = this.props;
@@ -84,6 +88,7 @@ class CardPost extends Component {
       description,
       totalLike,
       totalItem,
+      isBrief,
 
       token,
     };
@@ -150,21 +155,24 @@ class CardPost extends Component {
         description,
         totalLike,
         totalItem,
+        isBrief,
     } = this.dependencies;
-
+    if (description.length > 200 && isBrief)
+      description = description.slice(0,100) + ` ...Đọc thêm. `;
     // console.log(` Vẽ lên màn hình ${
     //   JSON.stringify({ownerName,
     //   name,
     //   description,
     //   likeTotal,
     //   exchangeTotal})}`)
-
+    const _style = styles.label;
     return {
-      ownerName: (<Text style={{flex: 1,borderWidth: 1,borderWidth: 1}}>tên người dùng {ownerName}</Text>),
-      name: (<Text style={{flex: 1,borderWidth: 1}}>tên vật phẩm: {name}</Text>),
-      description: (<Text style={{flex: 1,borderWidth: 1}}>mô tả: {description}</Text>),
-      likeTotal: (<Text style={{flex: 1,borderWidth: 1}}>Lượt thích {totalLike}</Text>),
-      exchangeTotal: (<Text style={{flex: 1,borderWidth: 1}}>Chờ trao đổi {totalItem}</Text>),
+      ownerName: (<Text style={_style.ownerName}>{ownerName}</Text>),
+      name: (<Text style={_style.name}>{name}</Text>),
+      description: (<Text 
+        style={_style.description}
+      >{description}</Text>),
+      likeAndExchange: (<Text style={_style.likeAndExchange}>{totalLike} thích - {totalItem} chờ trao đổi</Text>),
     }
   }
 
@@ -177,46 +185,96 @@ class CardPost extends Component {
     } = this.dependencies; 
 
     return {
-      ownerAvatar: (<Image style={ImageSize.huge} source={{uri: ownerAvatar}}/>),
-      mainPicture: (<Image style={{height: height * 2/3}} source={{uri: mainPicture}}/>),
+      ownerAvatar: (
+        <View 
+          style = {{
+            height: 50,
+            width: 50, 
+            borderRadius: 1000, 
+            overflow: 'hidden'}}>
+          <Image 
+            style = {{
+              flex: 1,
+              height: `100%`,
+              width: `100%`,
+            }} 
+            resizeMode = {'stretch'}
+            source = {
+              !!ownerAvatar?
+              {uri: ownerAvatar}
+              :require(`../../img/default.png`)}
+            />
+        </View>),
+      mainPicture: (
+        <View 
+          style = {{flex: 5, borderRadius: 10, marginTop: 10, overflow: 'hidden'}}>
+          <Image 
+            style = {{
+              flex: 1,
+              height: 100,
+              width: `100%`,
+            }} 
+            resizeMode = {'stretch'}
+            source = {
+              !!ownerAvatar?
+              {uri: ownerAvatar}
+              :require(`../../img/default.png`)}
+            />
+        </View>)
+      ,
     }
   }
 
   get button () {
+    const _style = styles.button;
     return {
+      info: (
+        <TouchableOpacity 
+          style={_style.info}>
+          {this.image.ownerAvatar}
+          {this.label.ownerName}
+        </TouchableOpacity>
+      ),
       detail: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 4,
+            // borderWidth: 1,
+          }}
           onPress={()=>{this.detailButton_onClick()}}
           >
-          {/* {this.image.ownerAvatar} */}
-          {this.label.ownerName}
+          {this.image.mainPicture}
           {this.label.name}
           {this.label.description}
-          {/* {this.image.mainPicture} */}
-          {this.label.likeTotal}
-          {this.label.exchangeTotal}
+          {this.label.likeAndExchange}
         </TouchableOpacity>
       ),
       like: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={_style.like}
           onPress={()=>{this.likeButton_onClick()}}
           >
-          <Text>Thích</Text>
+          <HeartIcon 
+          color = {Color.Gray}/>
+          <Text style = {_style.likeText}>THÍCH</Text>
         </TouchableOpacity>
       ),
       exchange: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={_style.exchange}
           onPress={()=>{this.exchangeButton_onClick()}}
           >
-          <Text>Trao đổi</Text>
+          <SwapIcon 
+            color = {Color.Gray}/>
+          <Text style = {_style.exchangeText}>TRAO ĐỔI</Text>
         </TouchableOpacity>
       ),
       contact: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 1,
+            // borderWidth: 1
+          }}
           onPress={()=>{this.contactButton_onClick()}}
           >
           <Text>Liên hệ</Text>
@@ -226,24 +284,32 @@ class CardPost extends Component {
   }
 
   get header () {
-    return (<View/>)
+    return (
+    <View style= {styles.header}>
+      {this.button.info}
+    </View>)
   }
 
   get body () {
     return (
-    <View style={{flex: 1,borderWidth: 1}}>
+    <View style={styles.body}>
       {this.button.detail}
-      {this.button.like}
-      {this.button.exchange}
     </View>)
   }
 
   get footer () {
-    return (<View/>)
+    return (
+    <View style={styles.footer}>
+      {this.button.like}
+      {this.button.exchange}
+    </View>)
   }
   get form () {
     return (
-      <View style={{flex: 1,borderWidth: 1}}>
+      <View style={{
+        flex: 1,
+        // borderWidth: 1,
+        }}>
         {this.header}
         {this.body}
         {this.footer}
@@ -254,10 +320,21 @@ class CardPost extends Component {
   render() {
     let {
       height,
+      isBrief,
+      description,
     } = this.dependencies;
 
+    let _height = height;
+    if (!isBrief){
+      _height = _height + description.length / 2;
+    }
     return (
-      <View style={{height: height}}>
+      <View style={{
+        height: _height, 
+        marginBottom: 20,
+        backgroundColor: Color.White,
+        padding: 10,
+        }}>
         {this.form}
       </View>
     );

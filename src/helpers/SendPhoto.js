@@ -30,7 +30,10 @@ export const openFromLibrary = (
     noData: true,
   }
   ImagePicker.launchImageLibrary(options, async res => {
-
+    if (res.didCancel) {
+      failed(` Đã hủy chọn hình.`)
+      return;
+    }
     
     if(!!res) {
     console.log(`res ${JSON.stringify(res)}`);

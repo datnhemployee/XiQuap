@@ -51,7 +51,7 @@ class LogIn extends Component {
     } = this.action;
     onLogIn((res) => {
       if(res.code === Codes.Success) {
-        this.refresh();
+        this.renew();
         success();
       } else {
         failed();

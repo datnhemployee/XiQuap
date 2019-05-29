@@ -13,6 +13,9 @@ import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import LocalStorage from '../../storage/LocalStorage';
 import CardPost from '../../components/card/CardPost';
+import { BackIcon } from '../../constant/Icon';
+import styles from './Waitting.styles';
+import Color from '../../constant/Color';
 
 class Waitting extends Component {
   constructor (props) {
@@ -175,8 +178,9 @@ class Waitting extends Component {
   }
 
   get label () {
+    const _style = styles.label;
     return {
-      screen: (<Text style={{flex: 1}}>Sạp của tôi</Text>)
+      screen: (<Text style={_style.screen}>Giỏ của tôi</Text>)
     }
   }
 
@@ -187,9 +191,11 @@ class Waitting extends Component {
     return {
       back: (
         <TouchableOpacity 
-          style={{flex: 1}}
+          style={{flex: 1, flexDirection: 'row'}}
           onPress={()=> {navigateToHome()}}>
-          <Text>Trở lại </Text>
+          <BackIcon 
+            color={Color.Gray}/>
+          {this.label.screen}
         </TouchableOpacity>
       )
     }
@@ -199,7 +205,6 @@ class Waitting extends Component {
     return (
       <View style={{flex: 1}}>
         {this.button.back}
-        {this.label.screen}
       </View>
     )
   }
@@ -250,15 +255,6 @@ class Waitting extends Component {
         onEndReachedThreshold={0.5}
         keyExtractor={(item,index)=>`PostIndex${index}`}
       />
-      </View>
-    )
-  }
-
-  get header () {
-    return (
-      <View style={{flex: 1}}>
-        {this.button.back}
-        {this.label.screen}
       </View>
     )
   }

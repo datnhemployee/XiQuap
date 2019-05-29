@@ -9,6 +9,7 @@ import MyStockReducer from "./MyStockReducer";
 import WaittingReducer from "./WaittingReducer";
 import BoughtReducer from "./BoughtReducer";
 import PhotoReducer from "./PhotoReducer";
+import TypeItemReducer from "./TypeItemReducer";
 
 export default combineReducers({
     navigation: NavigationReducer,
@@ -21,4 +22,5 @@ export default combineReducers({
     waitting: WaittingReducer,
     bought: BoughtReducer,
     photo: PhotoReducer,
+    type: TypeItemReducer,
 });
