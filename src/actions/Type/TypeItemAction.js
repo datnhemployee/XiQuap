@@ -51,7 +51,7 @@ const actions = {
     [TypeItemActionType.onGetAll]: (
         callback = (res) => {},
         dispatch,
-    ) => TypeAction.onDefinition(
+    ) => TypeItemAction.onDefinition(
             TypeItemActionType.onGetAll,
             callback,
             dispatch,
@@ -63,7 +63,7 @@ const actions = {
         pre = () => {},
         next = (res) => {},
         dispatch,
-    ) => TypeAction.emitDefinition(
+    ) => TypeItemAction.emitDefinition(
         data,
         TypeItemActionType.emitGetAll,
         pre,

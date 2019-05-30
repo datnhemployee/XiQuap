@@ -5,15 +5,23 @@ import {
   Modal,
   TouchableOpacity,
   Image,
+  Dimensions,
+  ScrollView,
 } from 'react-native';
-import {ImageSize} from '../../constant/Image';
 
 import { connect } from 'react-redux';
 import StockAction from '../../actions/Stock/StockAction';
 import StockActionType from '../../actions/Stock/StockActionType';
 import { Codes } from '../../constant/Response';
 import MessageBox from '../../components/MessageBox';
+import { BackIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import Typeface from '../../constant/Font';
 
+import styles from './StockDetail.styles';
+const {
+  height,
+} = Dimensions.get(`screen`);
 class StockDetail extends Component {
   constructor (props) {
     super(props);
@@ -25,7 +33,7 @@ class StockDetail extends Component {
   approve () {
     let {
       approve,
-      navigateToStock,
+      navigateToHome,
     } = this.action;
 
     let {
@@ -36,13 +44,13 @@ class StockDetail extends Component {
       token,
       _id: stock._id,
     },() => {},
-    (res) => {navigateToStock()});
+    (res) => {});
   }
 
   buy () {
     let {
       buy,
-      navigateToStock,
+      navigateToHome
     } = this.action;
 
     let {
@@ -56,7 +64,7 @@ class StockDetail extends Component {
     },()=> {},
     ()=>{
       MessageBox(` Đang gửi dữ liệu lên máy chủ.`);
-      navigateToStock();
+      navigateToHome();
     })
   }
 
@@ -67,12 +75,12 @@ class StockDetail extends Component {
       onBuy = () => {console.log(` Đang chờ nhận kết quả đổi quà.`)},
       onGetOne = () => {console.log(` Đang chờ nhận kết quả lấy chi tiết vật phẩm.`)},
       onApprove = () => {console.log(` Đang chờ nhận kết quả kiểm định chi tiết vật phẩm.`)},
-      navigateToStock = () => {console.log(`Vừa bấm chuyển sang màn hình quà tặng`)},
+      navigateToHome = () => {console.log(`Vừa bấm chuyển sang màn hình quà tặng`)},
     } = this.props;
     return {
       buy,
       approve,
-      navigateToStock,
+      navigateToHome,
       onBuy,
       onGetOne,
       onApprove,
@@ -136,9 +144,13 @@ class StockDetail extends Component {
 
   backButton_onClick () {
     let {
-      navigateToStock,
+      navigateToHome
     } = this.action;
-    navigateToStock();
+    navigateToHome();
+  }
+
+  get empty () {
+    return (<Text>Lỗi hiển thị</Text>);
   }
   
   get label () {
@@ -146,16 +158,25 @@ class StockDetail extends Component {
       stock,
     } = this.dependencies;
 
+    const screen = (
+      <Text 
+        style={{
+          flex: 5, 
+          ...Typeface.header[5],
+          textAlign: 'left', 
+          textAlignVertical: 'center'
+        }}>Chi tiết</Text>);
     // console.log(`stock.id ${JSON.stringify(stock)}`);
     if (!stock._id){
       return {
-        name: (<Text>Không có chi tiết vật phẩm</Text>),
-        description: (<Text>Không có chi tiết vật phẩm</Text>),
-        type: (<Text>Không có chi tiết vật phẩm</Text>),
-        point: (<Text>Không có chi tiết vật phẩm</Text>),
-        onwerName: (<Text>Không có chi tiết vật phẩm</Text>),
-        onwerTotalStar: (<Text>Không có chi tiết vật phẩm</Text>),
-        approve: (<Text>Không có chi tiết vật phẩm</Text>),
+        screen: screen,
+        name: this.empty,
+        description: this.empty,
+        type: this.empty,
+        point: this.empty,
+        onwerName: this.empty,
+        onwerTotalStar: this.empty,
+        approve: this.empty,
       }
     }
 
@@ -163,21 +184,25 @@ class StockDetail extends Component {
       name = '',
       id = '',
       description = '',
-      photoUrl = '',
+      mainPicture = '',
       type = '',
       point = 0,
       owner,
       approve = false,
     } = stock;
 
+    const _style = styles.label;
+
     return {
-      name: (<Text style={{flex: 1,borderWidth: 1}}>{name}</Text>),
-      description: (<Text style={{flex: 1,borderWidth: 1}}>{description}</Text>),
-      type: (<Text style={{flex: 1,borderWidth: 1}}>Loại {type}</Text>),
-      point: (<Text style={{flex: 1,borderWidth: 1}}>{point} điểm</Text>),
-      onwerName: (<Text style={{flex: 1,borderWidth: 1}}>@{owner.name}</Text>),
-      onwerTotalStar: (<Text style={{flex: 1,borderWidth: 1}}> {owner.totalStar} sao</Text>),
-      approve: (<Text style={{flex: 1,borderWidth: 1}}> {!approve ?` Chưa phê duyệt`:` Đã phê duyệt`}</Text>),
+        screen: screen,
+        name: (<Text style={_style.name}>{name}</Text>),
+        description: (<Text style={_style.description}>{description}</Text>),
+        type: (<Text style={_style.type}>{type}</Text>),
+        point: (<Text style={_style.point}>{point} điểm</Text>),
+        onwerName: (<Text style={_style.onwerName}>@{owner.name}</Text>),
+        onwerTotalStar: (<Text style={_style.onwerTotalStar}>{owner.totalStar} sao</Text>),
+        approve: (<Text style={[_style.approve,!approve?{}:{color: Color.DarkGreen}]}> 
+          {!approve ?`CHƯA DUYỆT`:`ĐÃ DUYỆT`}</Text>),
     }
   }
 
@@ -185,11 +210,30 @@ class StockDetail extends Component {
     let {
       height, 
 
-      photoUrl,
-    } = this.dependencies; 
+      mainPicture,
+    } = this.dependencies.stock; 
 
     return {
-      ownerAvatar: (<Image style={ImageSize.huge} source={{uri: photoUrl}}/>),
+      mainPicture: (
+        <View 
+          style={{
+            flex: 5,
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}>
+          <Image 
+          style={{
+            flex: 1,
+            width: `100%`,
+            height: `100%`,
+          }}
+          resizeMode = {'stretch'} 
+          source={
+            !!mainPicture?
+            {uri: mainPicture}
+            :require('../../img/default.png')}/>
+        </View>
+      ),
     }
   }
 
@@ -197,36 +241,63 @@ class StockDetail extends Component {
     let {
       stock,
     } = this.dependencies;
+    const _style = styles.button;
     return {
       buy: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={_style.buy}
           onPress={()=>{this.buyButton_onClick()}}
           >
-          <Text>Đổi quà</Text>
+          <Text style={_style.buyText}>ĐỔI QUÀ</Text>
         </TouchableOpacity>
       ),
       back: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 1,
+            // borderWidth: 1,
+          }}
           onPress={()=>{this.backButton_onClick()}}
           >
-          <Text>Trở lại</Text>
+          <BackIcon 
+            color = {Color.Gray}
+          />
         </TouchableOpacity>
       ),
       approve: !!stock._id?(
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={_style.approve}
           onPress={()=>{this.approveButton_onClick()}}
           >
-          <Text style={stock.approve?{color:`green`}:{color:`grey`}}>Đồng ý</Text>
+          <Text style={[_style.approveText,
+            stock.approve?{color:`green`}:{color:`grey`}]}>DUYỆT</Text>
         </TouchableOpacity>
       ):(<View/>),
+      info: !!stock._id?(
+        <TouchableOpacity 
+          style={{
+            flex: 2,
+            // borderWidth: 1,
+          }}
+          onPress={()=>{}}
+          >
+          {this.label.onwerName}
+          {this.label.onwerTotalStar}
+        </TouchableOpacity>
+      ):this.empty,
     }
   }
 
   get header () {
-    return (<View/>)
+    return (
+    <View  style={{
+      flex: 1,
+      // borderWidth: 1, 
+      flexDirection: 'row'
+      }}>
+      {this.button.back}
+      {this.label.screen}
+    </View>)
   }
 
   get body () {
@@ -235,14 +306,17 @@ class StockDetail extends Component {
     } = this.dependencies;
 
     return (
-    <View style={{flex: 1,borderWidth: 1}}>
-      {this.button.back}
-      {this.label.onwerName}
-      {this.label.onwerTotalStar}
-      {this.label.name}
-      {this.label.description}
+    <View style={{
+      flex: 8,
+      // borderWidth: 1, 
+      padding: 10
+      }}>
+      {this.button.info}
+      {this.image.mainPicture}
       {this.label.approve}
+      {this.label.name}
       {this.label.point}
+      {this.label.description}
       {this.button.buy}
       {isAdmin?this.button.approve:(<View/>)}
     </View>)
@@ -252,12 +326,25 @@ class StockDetail extends Component {
     return (<View/>)
   }
   get form () {
+    const {
+      description,
+    } = this.dependencies.stock;
+    const _height = height + ((!description)?0:description.length/ 2);
     return (
-      <View style={{flex: 1,borderWidth: 1}}>
-        {this.header}
-        {this.body}
-        {this.footer}
-      </View>
+      <ScrollView style={{
+        flex: 1,
+        // borderWidth: 1,
+        padding: 5
+        }}>
+        <View style={{
+          height: _height,
+          // borderWidth: 1
+          }}>
+          {this.header}
+          {this.body}
+          {this.footer}
+        </View>
+      </ScrollView>
     )
   }
 

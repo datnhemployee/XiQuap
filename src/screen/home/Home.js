@@ -20,6 +20,8 @@ import { AddIcon, WaittingIcon, SellingIcon } from '../../constant/Icon';
 import Color from '../../constant/Color';
 import TypeItemAction from '../../actions/Type/TypeItemAction';
 import TypeItemActionType from '../../actions/Type/TypeItemActionType';
+import AuthAction from '../../actions/Auth/AuthAction';
+import AuthActionType from '../../actions/Auth/AuthActionType';
 
 class Home extends Component {
   constructor (props) {
@@ -58,7 +60,9 @@ class Home extends Component {
       
       getMore = () => {console.log(`Đang lấy thêm dữ liệu`)},
       getAllType = () => {console.log(`Đang lấy thêm toàn bộ loại vật phẩm`)},
+      getInfo = () => console.log(` Lấy dữ liệu người dùng`),
       onGetMore = () => {},
+      onGetInfo = () => {},
       onGiveLike = () => {},
       onExchange = () => {},
       onApproved = () => {},
@@ -75,9 +79,11 @@ class Home extends Component {
 
       getMore,
       onGetMore,
+      getInfo,
       onGiveLike,
       onExchange,
       onApproved,
+      onGetInfo,
     }
   }
 
@@ -87,9 +93,14 @@ class Home extends Component {
       onGiveLike,
       onExchange,
       onApproved,
+      onGetInfo,
     } = this.action;
 
     this.onRefresh();
+    onGetInfo(() => {
+      this.setState({});
+    })
+
     onGetMore((res)=>{
 
       if (res.code===Codes.Success){
@@ -113,14 +124,13 @@ class Home extends Component {
 
     onGiveLike ((res) => {
       if (res.code === Codes.Success) {
-        
         let temp = this.dependencies.post;
 
         let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
         if (foundPostIndex != -1) {
           let returnList = this.state.list.slice();
           returnList[foundPostIndex] = temp;
-
+          
           this.setState({
             list: returnList.slice(),
           });
@@ -171,6 +181,15 @@ class Home extends Component {
   }
 
   onRefresh () {
+    let {
+      getInfo,
+    } = this.action;
+    let {
+      token,
+    } = this.dependencies;
+    getInfo({
+      token,
+    });
     this.setState({refreshing: true});
     this.getMore();
     this.setState({refreshing: false});
@@ -291,6 +310,7 @@ class Home extends Component {
             description = {item.description}
             totalLike = {item.totalLike}
             totalItem = {item.totalItem}
+            isLike = {item.isLike}
 
             navigateToExchange = {navigateToExchange}
             navigateToDetail = {navigateToDetail}
@@ -394,6 +414,30 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     ExchangeAction.on(
       ExchangeActionType.onApproveItem,
+    ).inject(
+      callback
+    )
+  ),
+
+  getInfo: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    AuthAction.emit(
+        AuthActionType.emitGetInfo,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+  
+  onGetInfo: (
+    callback = (res)=>{},
+  ) => dispatch(
+    AuthAction.on(
+      AuthActionType.onGetInfo,
     ).inject(
       callback
     )

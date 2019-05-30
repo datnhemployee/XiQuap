@@ -13,6 +13,9 @@ import StockAction from '../../actions/Stock/StockAction';
 import StockActionType from '../../actions/Stock/StockActionType';
 import MessageBox from '../MessageBox';
 import { Codes } from '../../constant/Response';
+import { WaittingIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import Typeface from '../../constant/Font';
 
 class SnippetStock extends Component {
   constructor (props) {
@@ -93,34 +96,38 @@ class SnippetStock extends Component {
 
   get dependencies () {
     let {
-      height = 700,
-      width = 100,
+      height = 200,
+      // width = 100,
 
       name = '',
       id = '',
       photoUrl = '',
       point = 0,
-      onwerTotalStar= '',
+      ownerTotalStar= '',
+      ownerName = ``,
       approve = false,
 
       token =null,
       isAdmin = false,
+      selling = true,
 
     } = this.props;
     return {
       height,
-      width,
+      // width,
 
       id ,
       photoUrl ,
 
       name ,
       point ,
-      onwerTotalStar,
+      ownerTotalStar,
+      ownerName,
       approve,
 
       token,
       isAdmin,
+      selling,
     };
   }
 
@@ -143,15 +150,35 @@ class SnippetStock extends Component {
     let {
       name ,
       point ,
-      onwerTotalStar,
+      ownerTotalStar,
       approve,
+      ownerName,
     } = this.dependencies;
 
+    name = (name.length > 15)? name.slice(0,10) + `...`: name.slice();
     return {
-      name: (<Text style={{flex: 1,borderWidth: 1}}>{name}</Text>),
-      point: (<Text style={{flex: 1,borderWidth: 1}}>{point} điểm</Text>),
-      onwerTotalStar: (<Text style={{flex: 1,borderWidth: 1}}> Chủ sở hữu {onwerTotalStar} sao</Text>),
-      approve: (<Text style={{flex: 1,borderWidth: 1}}> {!approve ?` Chưa phê duyệt`:` Đã phê duyệt`}</Text>),
+      name: (<Text style={{
+        flex: 1,
+        // borderWidth: 1
+        ...Typeface.header[4],
+        textAlign: `left`,
+        textAlignVertical: `center`,
+        flexWrap: 'wrap',
+      }}>{name}</Text>),
+      point: (<Text style={{
+        flex: 1,
+        // borderWidth: 1,
+        textAlign: `left`,
+        textAlignVertical: `top`,
+        ...Typeface.caption,
+      }}>{point} điểm</Text>),
+      approve: (<Text style={[{
+        flex: 1,
+        ...Typeface.overline,
+        textAlign: `left`,
+        textAlignVertical: `bottom`,
+        // borderWidth: 1
+      },!approve?{}:{color:`green`}]}> {!approve ?`CHƯA DUYỆT`:`ĐÃ DUYỆT`}</Text>),
     }
   }
 
@@ -162,9 +189,26 @@ class SnippetStock extends Component {
       photoUrl,
     } = this.dependencies; 
 
-    return {
-      ownerAvatar: (<Image style={ImageSize.huge} source={{uri: photoUrl}}/>),
-    }
+  return  (
+    <View style= {{
+      flex: 2,
+      overflow: `hidden`,
+      borderRadius: 20,
+      }}>
+      <Image 
+        style={{
+          flex: 1, 
+          width: `100%`,
+          height: `100%`,
+        }} 
+        resizeMode = {'stretch'}
+        source={!!photoUrl ?
+          {uri: photoUrl}
+          :require('../../img/default.png')
+        }
+        />
+    </View>
+    );
   }
 
   get button () {
@@ -175,56 +219,111 @@ class SnippetStock extends Component {
     return {
       buy: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 2,
+            // borderWidth: 1,
+            flexDirection: `row`,
+          }}
           onPress={()=>{this.buyButton_onClick()}}
           >
-          <Text>Đổi quà</Text>
+            <WaittingIcon color = {Color.Red}/>
+            <Text style={{
+              flex: 2, 
+              color:Color.Red,
+              ...Typeface.button,
+              textAlign: `left`,
+              textAlignVertical: 'center',
+            }}
+              >ĐỔI QUÀ</Text>
         </TouchableOpacity>
       ),
       detail: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 5,
+            // borderWidth: 1,
+            paddingLeft: 10,
+          }}
           onPress={()=>{this.detailButton_onClick()}}
           >
-            {this.label.name}
-            {this.label.onwerTotalStar}
-            {this.label.approve}
-            {this.label.point}
+          {this.label.approve}
+          {this.label.name}
+          {this.label.point}
         </TouchableOpacity>
       ),
       approve: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{
+            flex: 1,
+            // borderWidth: 1,
+          }}
           onPress={()=>{this.approveButton_onClick()}}
           >
-          <Text style={approve? {color: `green`}:{color: `grey`}}>Đồng ý</Text>
+          <Text style={[
+            {
+              flex: 1,
+              ...Typeface.button,
+              textAlign: `right`,
+              textAlignVertical: 'center',
+            },
+            approve? {color: `green`}:{color: Color.Gray}]}>
+              DUYỆT</Text>
         </TouchableOpacity>
       ),
     }
   }
 
   get header () {
-    return (<View/>)
+    return (
+    <View 
+      style={{
+        flex: 1,
+      }}>
+      <TouchableOpacity 
+          style={{
+            flex: 1,
+          }}
+          onPress={()=>{this.detailButton_onClick()}}
+          >
+          {this.image}
+        </TouchableOpacity>
+    </View>)
   }
 
   get body () {
     let {
       isAdmin = false,
+      selling,
     } = this.dependencies;
+
     return (
-    <View style={{flex: 1,borderWidth: 1}}>
+    <View style={{
+      flex: 1,
+      // borderWidth: 1
+      }}>
       {this.button.detail}
-      {this.button.buy}
-      {isAdmin?this.button.approve:(<View/>)}
-    </View>)
+      <View style ={{
+        flex: 1,
+        flexDirection: `row`,
+        }}>
+        {!!selling ?this.button.buy:(<View/>)}
+        {isAdmin?this.button.approve:(<View/>)}
+      </View>
+    </View>
+    )
   }
 
   get footer () {
-    return (<View/>)
+    return (
+    <View />)
   }
   get form () {
     return (
-      <View style={{flex: 1,borderWidth: 1}}>
+      <View style={{
+        flex: 1,
+        // borderWidth: 1
+        flexDirection: 'row',
+        }}>
         {this.header}
         {this.body}
         {this.footer}
@@ -235,11 +334,20 @@ class SnippetStock extends Component {
   render() {
     let {
       height,
-      width,
+      // width,
     } = this.dependencies;
 
     return (
-      <View style={{flex: 1/2,margin: 1}}>
+      <View style={{
+        // flex: 1,
+        // backgroundColor: `gradient`,
+        height: height,
+        // elevation: 1, 
+        overflow: `hidden`,
+        // borderRadius: 30,
+        // margin: 5,
+        padding: 10, 
+      }}>
         {this.form}
       </View>
     );

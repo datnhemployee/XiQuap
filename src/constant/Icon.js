@@ -32,10 +32,13 @@ const NameList = {
     selling: `isv`,
     add: `plus`,
     swap: `retweet`,
-    heart: `hearto`,
+    hearto: `hearto`,
+    heart: `heart`,
     back: `left`,
     star_outer: `staro`,
     star: `star`,
+    check: `checkcircle`,
+    uncheck: `checkcircleo`
 }
 
 
@@ -92,13 +95,17 @@ class SwapIcon extends MyAntDesign {
     constructor (props) {super(props);}
     render() { return super.render(NameList.swap)}
 }
-class HeartIcon extends MyAntDesign {
+class HeartoIcon extends MyAntDesign {
     constructor (props) {super(props);}
-    render() { return super.render(NameList.heart)}
+    render() { return super.render(NameList.hearto)}
 }
 class BackIcon extends MyAntDesign {
     constructor (props) {super(props);}
     render() { return super.render(NameList.back)}
+}
+class HeartIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.heart)}
 }
 class StarOuterIcon extends MyAntDesign {
     constructor (props) {super(props);}
@@ -107,7 +114,15 @@ class StarOuterIcon extends MyAntDesign {
 class StarIcon extends MyAntDesign {
     constructor (props) {super(props);}
     render() { return super.render(NameList.star)}
-}      
+}  
+class CheckIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.check)}
+}  
+class UncheckIcon extends MyAntDesign {
+    constructor (props) {super(props);}
+    render() { return super.render(NameList.uncheck)}
+}   
     
     
 export {
@@ -119,10 +134,13 @@ export {
     WaittingIcon,
     AddIcon,
     SwapIcon,
+    HeartoIcon,
     HeartIcon,
     BackIcon,
     StarIcon,
     StarOuterIcon,
+    CheckIcon,
+    UncheckIcon,
 }
 
 export {

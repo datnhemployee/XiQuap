@@ -16,6 +16,11 @@ import AuthAction from '../../actions/Auth/AuthAction';
 import StockActionType from '../../actions/Stock/StockActionType';
 import AuthActionType from '../../actions/Auth/AuthActionType';
 import { connect } from 'react-redux';
+import { SellingIcon, AddIcon, WaittingIcon } from '../../constant/Icon';
+import Typeface from '../../constant/Font';
+import Color from '../../constant/Color';
+import TypeItemAction from '../../actions/Type/TypeItemAction';
+import TypeItemActionType from '../../actions/Type/TypeItemActionType';
 
 class Stock extends Component {
   constructor (props) {
@@ -79,6 +84,7 @@ class Stock extends Component {
       onGetInfo = () => console.log(` Đang chờ phản hồi lấy thông tin cá nhân`),
       getStocks = () => console.log(` Gửi yêu cầu lấy vật phẩm`),
       getInfo = () => console.log(` Gửi yêu cầu lấy thông tin cá nhân`),
+      getAllType = () => {console.log(`Đang lấy thêm toàn bộ loại vật phẩm`)},
 
     } = this.props;
     return {
@@ -93,6 +99,7 @@ class Stock extends Component {
       onApprove,
       onGetInfo,
       getInfo,
+      getAllType,
     }
   }
 
@@ -220,8 +227,10 @@ class Stock extends Component {
   onAddButtonClick () {
     let {
       navigateToAddStock,
+      getAllType,
     } = this.action;
-    navigateToAddStock();
+    getAllType({},() => {},
+      () => {navigateToAddStock()});
   }
 
   onBoughtButtonClick () {
@@ -243,7 +252,12 @@ class Stock extends Component {
       point,
     } = this.dependencies;
     return {
-      point: (<Text style={{flex: 1}}> Điểm của tôi: {point} điểm</Text>)
+      point: (<Text style={{
+        flex: 5, 
+        ...Typeface.header[6], 
+        textAlign: 'center', 
+        textAlignVertical: 'center'}}
+        >{point} điểm</Text>)
     };
   }
 
@@ -251,21 +265,21 @@ class Stock extends Component {
     return {
       add: (
       <TouchableOpacity 
-        style={{flex: 1,borderWidth: 1}}
+        style={{flex: 1, justifyContent: 'center', alignContent: 'flex-start'}}
         onPress = {this.onAddButtonClick}>
-        <Text>Đăng vật phẩm</Text>
+        <AddIcon color={Color.Black}/>
       </TouchableOpacity>),
       myStock: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{flex: 1, justifyContent: 'center', alignContent: 'flex-end'}}
           onPress = {this.onMyStockButtonClick}>
-          <Text>Sạp điểm của tôi</Text>
+          <SellingIcon color={Color.Black}/>
         </TouchableOpacity>),
       bought: (
         <TouchableOpacity 
-          style={{flex: 1,borderWidth: 1}}
+          style={{flex: 1, justifyContent: 'center', alignContent: 'flex-start'}}
           onPress = {this.onBoughtButtonClick}>
-          <Text>Giỏ</Text>
+          <WaittingIcon color={Color.Black}/>
         </TouchableOpacity>)
     }
   }
@@ -277,25 +291,28 @@ class Stock extends Component {
 
     return (
       <FlatList
-        style = {{flex: 1,borderWidth: 1}}
+        style = {{
+          flex: 1,
+          // borderWidth: 1
+        }}
         data = {this.state.list}
-        numColumns = {2}
+        // numColumns = {2}
         renderItem = {({item}) => {
           
           // console.log(`snippetStock ${JSON.stringify(item)}`)
           return (
           <SnippetStock
-            height = {400}
-            width = {200}
+            // height = {200}
+            // width = {200}
             name = {item.name}
             id = {item._id}
             description = {item.description}
             photoUrl = {item.mainPicture}
             type = {item.typeName}
             point = {item.point}
-            onwerName = {item.owner.name}
-            onwerId= {item.owner._id}
-            onwerTotalStar= {item.owner.totalStar}
+            ownerName = {item.owner.name}
+            ownerId= {item.owner._id}
+            ownerTotalStar= {item.owner.totalStar}
             ownerAvatar= {item.owner.avatar}
             approve = {item.approve}
 
@@ -314,12 +331,16 @@ class Stock extends Component {
   
   get header () {
     return (
-      <View
-        style = {{flex: 1,borderWidth: 1}}>
-            {this.label.point}
-            {this.button.add}
-            {this.button.myStock}
-            {this.button.bought}
+      <View style={{flex: 1, flexDirection: 'row', backgroundColor: Color.LighGray}}>
+        {this.button.myStock}
+        <View style={{
+          flex: 5,
+          padding: 10,
+          }}>
+          {this.label.point}
+        </View>
+        {this.button.bought}
+        {this.button.add}
       </View>
     )
   }
@@ -327,7 +348,10 @@ class Stock extends Component {
   get body () {
     return (
       <View 
-        style={{flex: 8,borderWidth: 1}}>
+        style={{
+          flex: 8,
+          // borderWidth: 1
+          }}>
           {this.list}
       </View>
     )
@@ -337,7 +361,10 @@ class Stock extends Component {
   get form () {
     return (
       <View 
-        style={{flex: 1,borderWidth: 1}}>
+        style={{
+          flex: 1,
+          // borderWidth: 1
+          }}>
         {this.header}
         {this.body}
         {this.footer}
@@ -442,6 +469,20 @@ const mapDispatchToProps = (dispatch) => ({
     ).inject(
       callback
     )
+  ),
+
+  getAllType:  (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    TypeItemAction.emit(
+        TypeItemActionType.emitGetAll,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
   ),
 })
 

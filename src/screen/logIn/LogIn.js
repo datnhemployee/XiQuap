@@ -233,6 +233,7 @@ class LogIn extends Component {
           <MyTextInput 
           style={_style.password}
           placeholder={'Mật khẩu'}
+          secureTextEntry = {true}
           onClear = {this.onPasswordClear}
           onChangeText={(text) => {this.onPasswordChange(text)}}/>
       ),

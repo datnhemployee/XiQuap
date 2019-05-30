@@ -15,6 +15,9 @@ import StockActionType from '../../actions/Stock/StockActionType';
 import SnippetStock from '../../components/snippetStock/SnippetStock';
 import AuthAction from '../../actions/Auth/AuthAction';
 import AuthActionType from '../../actions/Auth/AuthActionType';
+import Color from '../../constant/Color';
+import Typeface from '../../constant/Font';
+import { BackIcon } from '../../constant/Icon';
 
 class MyStock extends Component {
   constructor (props) {
@@ -50,7 +53,7 @@ class MyStock extends Component {
     let {
       getMyStock = () => console.log(` Vừa gởi yêu cầu lấy những vật phẩm mà tôi đã quyên góp.`),
       navigateToStockDetail = () => console.log(` Vừa bấm chuyển sang màn hình chi tiết vật phẩm.`),
-      navigateToStock = () => console.log(` Vừa bấm chuyển sang màn hình vật phẩm.`),
+      navigateToHome = () => console.log(` Vừa bấm chuyển sang màn hình chính.`),
       onGetMyStock = () => console.log(` Đang chờ yêu cầu lấy những vật phẩm đã quyên góp.`),
       onGetInfo = () => console.log(` Đang chờ yêu cầu lấy thông tin cá nhân.`),
       onApprove = () => console.log(` Đang chờ yêu cầu lấy những vật phẩm đã được chấp thuận.`),
@@ -58,7 +61,7 @@ class MyStock extends Component {
     } = this.props;
     return {
       navigateToStockDetail,
-      navigateToStock,
+      navigateToHome,
       getMyStock,
       onGetMyStock,
       onApprove,
@@ -169,21 +172,32 @@ class MyStock extends Component {
       point,
     } = this.dependencies;
     return {
-      screen: (<Text style={{flex: 1}}>Sạp điểm của tôi</Text>),
-      point: (<Text style={{flex: 1}}> Điểm của tôi: {point} điểm</Text>),
+      screen: (<Text style={{
+        flex: 1, 
+        ...Typeface.header[5],
+        textAlign: `left`,
+        textAlignVertical: 'bottom',
+      }}>Sạp điểm</Text>),
+      point: (<Text style={{
+        flex: 1,
+        ...Typeface.overline,
+        textAlign: `left`,
+        textAlignVertical: 'top',
+      }}> TÔI: {point} ĐIỂM</Text>),
     }
   }
 
   get button () {
     let {
-      navigateToStock,
+      navigateToHome,
     } = this.action;
     return {
       back: (
         <TouchableOpacity 
           style={{flex: 1}}
-          onPress={()=> {navigateToStock()}}>
-          <Text>Trở lại </Text>
+          onPress={()=> {navigateToHome()}}>
+          <BackIcon 
+            color={Color.Gray}/>
         </TouchableOpacity>
       )
     }
@@ -191,10 +205,19 @@ class MyStock extends Component {
 
   get header () {
     return (
-      <View style={{flex: 1}}>
+      <View style={{
+        flex: 1,
+        backgroundColor: Color.LighGray,
+        flexDirection: `row`,
+        }}>
         {this.button.back}
-        {this.label.screen}
-        {this.label.point}
+        <View 
+        style={{
+          flex: 5,
+        }}>
+          {this.label.screen}
+          {this.label.point}
+        </View>
       </View>
     )
   }
@@ -212,14 +235,14 @@ class MyStock extends Component {
         <FlatList
         style = {{flex: 1,borderWidth: 1}}
         data = {this.state.list}
-        numColumns = {2}
+        // numColumns = {2}
         renderItem = {({item}) => {
           
           // console.log(`snippetStock ${JSON.stringify(item)}`)
           return (
           <SnippetStock
-            height = {400}
-            width = {200}
+            // height = {400}
+            // width = {200}
             name = {item.name}
             id = {item._id}
             description = {item.description}
@@ -231,6 +254,7 @@ class MyStock extends Component {
             onwerTotalStar= {user.totalStar}
             ownerAvatar= {user.avatar}
             approve = {item.approve}
+            selling = {false}
 
             navigateToStockDetail = {navigateToStockDetail}
           />)
@@ -242,15 +266,6 @@ class MyStock extends Component {
         onEndReachedThreshold={0.5}
         keyExtractor={(item,index)=>`StockIndex${index}`}
       />
-      </View>
-    )
-  }
-
-  get header () {
-    return (
-      <View style={{flex: 1}}>
-        {this.button.back}
-        {this.label.screen}
       </View>
     )
   }

@@ -264,6 +264,7 @@ class Detail extends Component {
             description = {item.description}
             totalLike = {item.totalLike}
             totalItem = {item.totalItem}
+            isLike = {item.isLike}
 
             navigateToExchange = {this.onCardPostExchangeClick}
             navigateToDetail = {() => {}}

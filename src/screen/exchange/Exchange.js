@@ -3,24 +3,37 @@ import {
   View, 
   Text,
   Modal,
-  TextInput,
+  Image,
   TouchableOpacity,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import ExchangeAction from '../../actions/Exchange/ExchangeAction';
 import ExchangeActionType from '../../actions/Exchange/ExchangeActionType';
 import { connect } from 'react-redux';
 import { Codes } from '../../constant/Response';
+import { BackIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
+import MyTextInput from '../../components/myTextInput/MyTextInput';
+import styles from './Exchange.styles';
 
+const {
+  height,
+} = Dimensions.get('screen');
 class Exchange extends Component {
   constructor (props) {
     super(props);
     this.state = {
       name: ``,
       description: ``,
+      photoUrl: ``,
     }
     this.onSubmitButtonClick = this.onSubmitButtonClick.bind(this);
     this.onDescriptionChange = this.onDescriptionChange.bind(this);
+    this.onDescriptionClear = this.onDescriptionClear.bind(this);
     this.onNameChange = this.onNameChange.bind(this);
+    this.onNameClear = this.onNameClear.bind(this);
+    this.onBackButtonClick = this.onBackButtonClick.bind(this);
   }
 
   submit () {
@@ -40,7 +53,7 @@ class Exchange extends Component {
         token,
         name: this.state.name,
         description: this.state.description,
-        photoUrl: ``,
+        photoUrl: this.state.photoUrl,
       });
     }
     navigateToHome();
@@ -133,75 +146,133 @@ class Exchange extends Component {
     })
   }
 
+  onBackButtonClick () {
+    let {
+      navigateToHome
+    } = this.action;
+    navigateToHome();
+  }
+
+  onDescriptionClear () {
+    this.setState({description: ''});
+  }
+
+  onNameClear () {
+    this.setState({name: ''});
+  }
+
   get label () {
     let {
       item, 
       name,
     } = this.dependencies;
 
-    let isNull = !item._id;
+    const _style = styles.label;
+    if (!item._id) {
+      return (<Text >Đang chờ thông tin từ máy chủ</Text>)
+    }
     return {
-      nameOfOwner: (<Text >{isNull?` Lỗi `:item.owner.name}</Text>),
-      name: (<Text >{isNull?` Lỗi `:item.name}</Text>),
-      description: (<Text >{isNull?` Lỗi `:item.description}</Text>),
-      totalLike: (<Text >{isNull?` Lỗi `:item.totalLike}</Text>),
-      nameOfVendee: (<Text >{name}</Text>),
+      screen: (<Text style={_style.screen}>Trao đổi</Text>),
     }
   }
 
   get textInput () {
+    const _style = styles.textInput;
     return {
-      name: (<TextInput 
-        placeholder={` Tên của vật trao đổi `}
-        onChangeText={(text)=>{this.onNameChange(text)}}
-        />),
-      description: (<TextInput 
-        placeholder={` Nội dung trao đổi `}
-        onChangeText={(text)=>{this.onDescriptionChange(text)}}
-        />),
+      name: (<MyTextInput 
+        style={_style.name}
+          onClear = {this.onNameClear}
+          placeholder={'Tên vật'}
+          onChangeText={(text) => {this.onNameChange(text)}}/>
+          ),
+      description: (<MyTextInput 
+          style={_style.description}
+          onClear = {this.onDescriptionClear}
+          multiline = {true}
+          placeholder={'Mô tả'}
+          onChangeText={(text) => {this.onDescriptionChange(text)}}/>
+        ),
     }
   }
 
   get button () {
-
+    const _style = styles.button;
     return {
       submit: (
-      <TouchableOpacity 
-        onPress = {this.onSubmitButtonClick}> 
-        <Text>Gửi</Text>
-      </TouchableOpacity>),
+        <TouchableOpacity 
+        style={_style.submit.button}
+        onPress={()=>{this.onSubmitButtonClick()}}
+        ><Text style={_style.submit.text}>ĐĂNG</Text>
+        </TouchableOpacity>
+      ),
+      back: (
+        <TouchableOpacity 
+          style = {_style.back}
+          onPress = {this.onBackButtonClick}> 
+          <BackIcon 
+            color= {Color.Gray}/>
+          {this.label.screen}
+        </TouchableOpacity>),
     }
   }
 
   get imagePicker () {
-    return {
-      mainPhoto: (<View />)
-    }
+    // const avatar = !?
+    //       `Chạm để chọn ảnh đại diện`
+    //       :avatar;
+
+    const _style= styles.imagePicker;
+    return (
+      <TouchableOpacity 
+        style={_style.button}
+        onPress = {this.onImagePickerClick}>
+        {this.image}
+        <Text 
+          style={_style.text}
+          >{!this.state.avatar ?
+          `Chạm để chọn ảnh vật phẩm`
+          :this.state.avatar}
+        </Text>
+      </TouchableOpacity>
+    )
+  }
+
+  get image () {
+    const avatar = this.state.avatar;
+    return (
+      <Image 
+        style = {{
+          flex: 2,
+          height: `100%`,
+          width: `100%`,
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50,
+        }} 
+        resizeMode = {'stretch'}
+        source = {!!avatar?{uri: avatar}:require(`../../img/default.png`)}
+      />
+    )
   }
 
  
 
   get header () {
     return (
-      <View style={{flex: 1}}>
-        {this.label.nameOfOwner}
-        {this.label.name}
-        {this.label.description}
-        {this.label.totalLike}
+      <View style={styles.header}>
+        {this.button.back}
       </View>
     )}
   get body () {
     return (
-      <View style={{flex: 1}}>
-        {this.label.nameOfVendee}
-        {this.imagePicker.mainPhoto}
+      <View style={styles.body}>
+        {this.imagePicker}
         {this.textInput.name}
         {this.textInput.description}
       </View>
     )}
   get footer () {
     return (
-    <View style={{flex: 1}}>
+    <View style={styles.footer}>
       {this.button.submit}
     </View>
     )
@@ -209,11 +280,15 @@ class Exchange extends Component {
   
   get form () {
     return (
-      <View style={{flex: 1}}>
-        {this.header}
-        {this.body}
-        {this.footer}
-      </View>
+      <ScrollView 
+      style={{flex: 1}}
+      showsHorizontalScrollIndicator = {false}>
+        <View style={styles.container}>
+          {this.header}
+          {this.body}
+          {this.footer}
+        </View>
+      </ScrollView>
     )
   }
 

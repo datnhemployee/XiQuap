@@ -103,6 +103,7 @@ export const actions = {
             description,
             typeName,
             token,
+            mainPicture,
         },
         pre = () => {},
         next = (res) => {},
@@ -124,6 +125,7 @@ export const actions = {
                     description,
                     typeName,
                     token,
+                    mainPicture,
                 }
             );
             next ({

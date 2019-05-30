@@ -59,9 +59,11 @@ class Register extends Component {
     emitRegister({
       // username: this.state.username,
       // password: this.state.password,
+      // name: this.state.name,
       // email: this.state.email,
       // phone: this.state.phone,
       // intro: this.state.intro,
+      avatar: this.state.avatar,
 
       username: `admin123`,
       password: `admin123`,
@@ -89,9 +91,9 @@ class Register extends Component {
     onRegister((res) => {
       if(res.code === Codes.Success) {
         // this.refresh();
-        success();
+        success(res.content);
       } else {
-        failed();
+        failed(res.content);
       }
     });
   }
@@ -122,8 +124,6 @@ class Register extends Component {
 
     openLibrary(
       (res) => {
-        
-
       this.setState({avatar: res});
     },
     );
@@ -165,7 +165,17 @@ class Register extends Component {
 
     this.onRegister(
       () => {navigateToHome();},
-      () => {navigateToLogIn();}
+      (err) => {
+        Alert.alert(
+          `Cảnh báo`,
+          err,
+          [
+            {text: `Tắt`,onPress: () => {}}
+          ],
+          {
+            cancelable: false,
+          })
+      }
     )
     
   }
@@ -177,20 +187,20 @@ class Register extends Component {
       : !!this.validated.email? this.validated.email
       : !!this.validated.phone? this.validated.phone
       : undefined;
-    console.log(`Nhận thấy: `,constrainst)
-    if(!!constrainst) {
-      Alert.alert(
-        `Cảnh báo`,
-        constrainst,
-        [
-          {text: `Tắt`}
-        ],
-        {
-          cancelable: false,
-        })
-    } else {
+    // console.log(`Nhận thấy: `,constrainst)
+    // if(!!constrainst) {
+    //   Alert.alert(
+    //     `Cảnh báo`,
+    //     constrainst,
+    //     [
+    //       {text: `Tắt`}
+    //     ],
+    //     {
+    //       cancelable: false,
+    //     })
+    // } else {
       this.emitRegister();
-    }
+    // }
   }
   onImagePickerClick () {
     this.sendImage ();
@@ -409,6 +419,7 @@ class Register extends Component {
         <MyTextInput 
           style={_style.password}
           onClear = {this.onPasswordClear}
+          secureTextEntry = {true}
           placeholder={'Mật khẩu'}
           onChangeText={(text) => {this.onPasswordChange(text)}}/>
       ),

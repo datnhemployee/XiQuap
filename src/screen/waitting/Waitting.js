@@ -224,10 +224,7 @@ class Waitting extends Component {
         data = {this.state.list}
         renderItem = {({item}) => {
           
-          item = {
-            ...item.item
-          };
-          // console.log(`cardPost Waitting ${JSON.stringify(item)}`)
+          console.log(`cardPost Waitting ${JSON.stringify(item)}`)
           // console.log(`cardPost Waitting ${JSON.stringify(item.owner)}`)
 
           return (
@@ -243,6 +240,7 @@ class Waitting extends Component {
             description = {item.description}
             totalLike = {item.totalLike}
             totalItem = {item.totalItem}
+            isLike = {item.isLike}
 
             navigateToExchange = {navigateToExchange}
             navigateToDetail = {navigateToDetail}

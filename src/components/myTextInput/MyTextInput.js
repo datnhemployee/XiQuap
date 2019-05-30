@@ -71,6 +71,7 @@ export default class MyTextInput extends Component {
             style = styles.textInput,
             keyboardType = 'default',
             multiline = false,
+            secureTextEntry = false,
             // numberOfLines = 1,
         } = this.props;
         return {
@@ -79,6 +80,7 @@ export default class MyTextInput extends Component {
             style,
             keyboardType,
             multiline,
+            secureTextEntry,
             // numberOfLines,
         }
     }
@@ -109,6 +111,7 @@ export default class MyTextInput extends Component {
             style,
             keyboardType,
             multiline,
+            secureTextEntry,
             // numberOfLines,
         } = this.dependencies;
 
@@ -126,6 +129,7 @@ export default class MyTextInput extends Component {
                 keyboardType = {keyboardType}
                 value = {this.state.text}
                 multiline = {multiline}
+                secureTextEntry = {secureTextEntry}
                 // numberOfLines = {numberOfLines}
                 />
         )

@@ -19,6 +19,7 @@ import { BackIcon } from '../../constant/Icon';
 import Color from '../../constant/Color';
 import styles from './Post.styles';
 import TypeItemAction from '../../actions/Type/TypeItemAction';
+import TypeItemActionType from '../../actions/Type/TypeItemActionType';
 
 const {
   height,
@@ -85,16 +86,15 @@ class Post extends Component {
       navigateToHome,
       onGetAllType,
     } = this.action;
-        console.log(`Vừa đăng: ${JSON.stringify(navigateToHome)}`);
 
-      onGetAllType(
-        (res) => {
-          this.setState({type: res.content.list});
-        }
-      )
+    onGetAllType(
+      (res) => {
+        this.setState({type: res.content.list})
+      }
+    )
       onInsertItem(
         (res) => {
-          console.log(`Vừa đăng: ${JSON.stringify(res)}`);
+          // console.log(`Vừa đăng: ${JSON.stringify(res)}`);
           navigateToHome();
       }
     )
@@ -121,7 +121,7 @@ class Post extends Component {
     this.setState({
       name: '',
       description: '',
-      typeName: '',
+      typeName: 'Sách vở',
       photo: '',
     })
   }
@@ -213,7 +213,7 @@ class Post extends Component {
       ),
       image: (
         <TouchableOpacity 
-        style={{height: 200}}
+        style={{height: 300}}
         onPress={()=>{this.sendImage()}}
         >
           <Text style={_style.image.text}>CHẠM ĐỂ CHỌN HÌNH</Text>
@@ -246,7 +246,7 @@ class Post extends Component {
 
   get image () {
     let photo = this.state.photo;
-    console.log(`url photo là: ${JSON.stringify(photo)}`)
+    // console.log(`url photo là: ${JSON.stringify(photo)}`)
 
     return (
       <Image
@@ -266,13 +266,13 @@ class Post extends Component {
       style={{flex: 1, flexDirection: `row`}}>
         {this.button.back}
         {this.label.screen}
-    </View>) }
+    </View>) 
+    }
   get body () {
     return (
       <View 
         style={{flex: 8}}>
         {this.textInput.name}
-        {this.textInput.typeName}
         {this.textInput.description}
         {this.picker}
         {this.button.image}
@@ -284,7 +284,6 @@ class Post extends Component {
   
   get form () {
     return (
-
       <ScrollView style={{flex: 1, padding: 10}}>
         {this.header}
         {this.body}
@@ -351,7 +350,7 @@ const mapDispatchToProps = (dispatch) => ({
     callback = (res) => {},
     ) => dispatch(
       TypeItemAction.on(
-        TypeItemAction.onGetAll
+        TypeItemActionType.onGetAll
       ).inject(
         data,
         callback,

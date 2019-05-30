@@ -33,6 +33,7 @@ import AuthActionType from '../actions/Auth/AuthActionType';
 import styles from './AppContainer.styles';
 import Color from '../constant/Color';
 import { ExchangeIcon, InfoIcon, PointIcon } from '../constant/Icon';
+import { Codes } from '../constant/Response';
 
 class AppContainer extends Component {
   constructor (props) {
@@ -60,6 +61,7 @@ class AppContainer extends Component {
   }
 
   componentDidMount () {
+    
     socket.on('disconnect', (reason) => {
       LocalStorage.setToken('',() => {
         MessageBox(` Mất kết nối máy chủ. Đăng nhập lại.`);
@@ -101,16 +103,16 @@ class AppContainer extends Component {
   }
 
   navigateToInfo () {
-    let {
-      getInfo,
-    } = this.action;
-    let {
-      token,
-    } = this.dependencies;
+    // let {
+    //   getInfo,
+    // } = this.action;
+    // let {
+    //   token,
+    // } = this.dependencies;
     this.action.navigate(Navigation.info);
-    getInfo({token},()=>{},(res)=> {
-      console.log(` Đang chờ dữ liệu người dùng`);
-    });
+    // getInfo({token},()=>{},(res)=> {
+    //   console.log(` Đang chờ dữ liệu người dùng`);
+    // });
     !!this.refHomeScreen ? this.refHomeScreen.setPage(2):undefined;
   }
 
@@ -162,12 +164,12 @@ class AppContainer extends Component {
 
   get action () {
     let {
-      getInfo = () => console.log(` Lấy dữ liệu người dùng`),
+      // onGetInfo = () => console.log(` Đã lấy dữ liệu người dùng`),
       navigate,
     } = this.props;
     return {
       navigate,
-      getInfo,
+      // onGetInfo,
     }
   }
 
@@ -240,7 +242,7 @@ class AppContainer extends Component {
       <MyStock 
         style={styles.container}
         visible={navigation === Navigation.myStock}
-        navigateToStock={this.navigateToStock}
+        navigateToHome={this.navigateToHome}
         navigateToStockDetail = {this.navigateToStockDetail}
         />
     );
@@ -254,7 +256,7 @@ class AppContainer extends Component {
       <Bought 
         style={styles.container}
         visible={navigation === Navigation.bought}
-        navigateToStock={this.navigateToStock}
+        navigateToHome={this.navigateToHome}
         navigateToStockDetail = {this.navigateToStockDetail}
         />
     );
@@ -442,7 +444,7 @@ class AppContainer extends Component {
       <AddStock 
         style={styles.container}
         visible={navigation === Navigation.addStock}
-        navigateToStock={this.navigateToStock}
+        navigateToHome={this.navigateToHome}
         />
     );
   }
@@ -455,7 +457,7 @@ class AppContainer extends Component {
       <StockDetail 
         style={styles.container}
         visible={navigation === Navigation.stockDetail}
-        navigateToStock={this.navigateToStock}
+        navigateToHome={this.navigateToHome}
         />
     );
   }
@@ -566,19 +568,7 @@ const mapDispatchToProps = (dispatch) => ({
       )
     ),
 
-  getInfo: (
-    data,
-    pre = () => {},
-    next = (res) => {},
-  ) => dispatch(
-    AuthAction.emit(
-        AuthActionType.emitGetInfo,
-      ).inject(
-        data,
-        pre,
-        next
-      ),
-  ),
+  
 })
 
 export default connect(

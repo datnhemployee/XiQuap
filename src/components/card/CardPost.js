@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import { options } from '../../services/API/PostDocument';
 import Color from '../../constant/Color';
 import styles from './CardPost.styles';
-import { SwapIcon, ExchangeIcon, HeartIcon } from '../../constant/Icon';
+import { SwapIcon, HeartoIcon, HeartIcon } from '../../constant/Icon';
 
 class CardPost extends Component {
   constructor (props) {
@@ -72,6 +72,7 @@ class CardPost extends Component {
       totalLike = 0,
       totalItem = 0,
       isBrief = true,
+      isLike = false,
 
       token = '',
     } = this.props;
@@ -89,6 +90,7 @@ class CardPost extends Component {
       totalLike,
       totalItem,
       isBrief,
+      isLike,
 
       token,
     };
@@ -216,8 +218,8 @@ class CardPost extends Component {
             }} 
             resizeMode = {'stretch'}
             source = {
-              !!ownerAvatar?
-              {uri: ownerAvatar}
+              !!mainPicture?
+              {uri: mainPicture}
               :require(`../../img/default.png`)}
             />
         </View>)
@@ -226,6 +228,9 @@ class CardPost extends Component {
   }
 
   get button () {
+    const {
+      isLike,
+    } = this.dependencies;
     const _style = styles.button;
     return {
       info: (
@@ -254,9 +259,11 @@ class CardPost extends Component {
           style={_style.like}
           onPress={()=>{this.likeButton_onClick()}}
           >
-          <HeartIcon 
-          color = {Color.Gray}/>
-          <Text style = {_style.likeText}>THÍCH</Text>
+          {!isLike ?<HeartoIcon 
+            color = {Color.Gray}/>
+            :<HeartIcon
+            color = {Color.Red}/>}
+          <Text style = {[_style.likeText,!isLike?{color:Color.Gray}:{color:Color.Red}]}>THÍCH</Text>
         </TouchableOpacity>
       ),
       exchange: (

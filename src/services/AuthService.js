@@ -40,6 +40,8 @@ export default class AuthService {
             result:
             !userForRegister.email ?
             `yêu cầu nhập email.`:
+            !userForRegister.name ?
+            `yêu cầu nhập tên.`:
             !userForRegister.phone ?
             `yêu cầu nhập số điện thoại.`:
             undefined;

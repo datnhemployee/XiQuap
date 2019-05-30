@@ -7,24 +7,25 @@ import {
     emit,
 } from './Service';
 import TypeDocument from './API/TypeItemDocument';
-import TypeActionType from '../actions/Type/TypeItemActionType';
+import TypeItemActionType from '../actions/Type/TypeItemActionType';
 
 
 export const actions = {
     // On
-    [TypeActionType.onGetAll]: (
+    [TypeItemActionType.onGetAll]: (
         callback = (res)=> {},
     ) => {
         on(TypeDocument.onGetAllType,(res) => {
             if(res.code === Codes.Success){
             } else {
             }
+            console.log(`Các type là: ${JSON.stringify(res)}`);
             callback(res);
         });
     },
 
     // Emit
-    [TypeActionType.emitGetAll]: (
+    [TypeItemActionType.emitGetAll]: (
         {
         },
         pre = () => {},
