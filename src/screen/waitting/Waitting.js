@@ -241,6 +241,7 @@ class Waitting extends Component {
             totalLike = {item.totalLike}
             totalItem = {item.totalItem}
             isLike = {item.isLike}
+            // isSwaping = {false}
 
             navigateToExchange = {navigateToExchange}
             navigateToDetail = {navigateToDetail}

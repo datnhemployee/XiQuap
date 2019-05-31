@@ -23,6 +23,8 @@ import TypeItemAction from '../../actions/Type/TypeItemAction';
 import TypeItemActionType from '../../actions/Type/TypeItemActionType';
 
 class Stock extends Component {
+  _isMounted = false;
+
   constructor (props) {
     super(props);
     this.state = {
@@ -103,7 +105,12 @@ class Stock extends Component {
     }
   }
 
+  componentWillMount () {
+    this._isMounted = false;
+  }
+
   componentDidMount () {
+    this._isMounted = true;
     let {
       token,
       isAdmin,
@@ -118,10 +125,11 @@ class Stock extends Component {
       getInfo,
     } = this.action;
 
-    this.onRefresh();
+    
+        this.onRefresh();
     onInsert((res)=>{
       if (res.code === Codes.Success) {
-        this.onRefresh();        
+          this.onRefresh();        
       }
     })
 
@@ -134,10 +142,11 @@ class Stock extends Component {
           );
         temp = temp.concat(this.dependencies.stock.list);
         console.log(`length: ${temp.length}`)
-        this.setState({
-          list: temp.slice(),
-          amount: temp.length,
-        });
+        if(this._isMounted)
+          this.setState({
+            list: temp.slice(),
+            amount: temp.length,
+          });
         MessageBox(`Lấy thêm dữ liệu thành công`);
 
         getInfo({
@@ -156,9 +165,10 @@ class Stock extends Component {
             let returnList = this.state.list.slice();
             returnList[foundPostIndex] = temp;
 
-            this.setState({
-              list: returnList.slice(),
-            });
+            if(this._isMounted)
+              this.setState({
+                list: returnList.slice(),
+              });
           }
         } else {
           // console.log(` Trả về cho người dùng ${JSON.stringify(res)}`)
@@ -219,9 +229,11 @@ class Stock extends Component {
   }
 
   onRefresh () {
-    this.setState({refreshing: true});
-    this.getMore();
-    this.setState({refreshing: false});
+    if(this._isMounted) {
+      this.setState({refreshing: true});
+      this.getMore();
+      this.setState({refreshing: false});
+    }
   }
 
   onAddButtonClick () {

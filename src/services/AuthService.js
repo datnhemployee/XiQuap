@@ -146,6 +146,17 @@ const actions = {
             callback(res);
         });
     },
+    [AuthActionType.onGetOther]: (
+        callback = (res)=> {},
+    ) => {
+        on(AuthDocument.onGetOther,(res) => {
+            if(res.code === Codes.Success){
+            }
+            else {
+            }
+            callback(res);
+        });
+    },
 
     // Emit
     [AuthActionType.emitTokenLogIn]: (
@@ -277,6 +288,41 @@ const actions = {
             emit(AuthDocument.emitGetInfo,
                 {
                     token
+                },
+            );
+
+            next ({
+                code: Codes.Success,
+                content: `Đang gửi dữ liệu lên máy chủ...`,
+            })
+        } else {
+            next ({
+                code: Codes.Exception,
+                content: constrainst,
+            })
+        }
+    },
+    [AuthActionType.emitGetOther]: (
+        {
+            token,
+            _id,
+        },
+        pre = () => {},
+        next = (res) => {},
+    ) => {
+        pre();
+
+        const constrainst = !token ?
+            ` không tồn tại token.`
+            :!_id ?
+            ` không tồn tại id.`
+            :undefined;
+        
+        if(!constrainst) {
+            emit(AuthDocument.emitGetOther,
+                {
+                    token,
+                    _id,
                 },
             );
 

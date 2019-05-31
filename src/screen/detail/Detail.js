@@ -21,6 +21,9 @@ import { BackIcon, StarIcon, StarOuterIcon } from '../../constant/Icon';
 import Color from '../../constant/Color';
 import { interfaceDeclaration } from '@babel/types';
 import Typeface from '../../constant/Font';
+import MessageBox from '../../components/MessageBox';
+import AuthAction from '../../actions/Auth/AuthAction';
+import AuthActionType from '../../actions/Auth/AuthActionType';
 
 class Detail extends Component {
   constructor (props) {
@@ -29,6 +32,7 @@ class Detail extends Component {
     }
     this.onBackButtonClick = this.onBackButtonClick.bind(this);
     this.onCardPostExchangeClick = this.onCardPostExchangeClick.bind(this);
+    this.onApprovedCardClick = this.onApprovedCardClick.bind(this);
   }
 
   // giveLike (id) {
@@ -42,13 +46,38 @@ class Detail extends Component {
   //   })
   // }
 
+  onApprovedCardClick () {
+    let {
+      item,
+      token,
+    } = this.dependencies;
+    
+    if (!item) {
+      return;
+    }
+    if (!item.vendee) {
+      return;
+    }
+
+    let {
+      getOther,
+    } = this.action;
+    getOther({
+      _id: item.vendee._id,
+      token: token,
+    })
+  }
+
   get action () {
     let {
       navigateToHome = () => console.log(` Vừa bấm chuyển sang màn hình chính.`),
       navigateToExchange = () => console.log(` Vừa bấm chuyển sang màn hình trao đổi .`),
+      navigateToOther = () => console.log(` Vừa bấm chuyển sang màn hình thông tin người dùng khác .`),
 
       // giveLike = () => console.log(` Vừa bấm thích vật phẩm .`),
       onGiveLike = () => console.log(` Đang chờ thông tin like từ máy chủ .`),
+      getOther = () => console.log(` Đang lấy thông tin người dùng khác .`),
+      onGetOther = () => console.log(` Đang chờ thông tin người dùng khác .`),
       onGetItem = () => console.log(` Đang chờ vật phẩm từ máy chủ .`),
       onExchange = () => console.log(` Đang chờ thông tin trao đổi từ máy chủ .`),
       
@@ -56,11 +85,14 @@ class Detail extends Component {
     return {
       navigateToHome,
       navigateToExchange,
+      navigateToOther,
 
       // giveLike,
       onGiveLike,
       onGetItem,
       onExchange,
+      getOther,
+      onGetOther,
     };
   }
 
@@ -68,10 +100,12 @@ class Detail extends Component {
     let {
       visible = false,
       item = null,
+      token = null,
     } = this.props;
     return {
       visible,
       item,
+      token,
     };
   }
 
@@ -80,6 +114,8 @@ class Detail extends Component {
       onGiveLike,
       onGetItem,
       onExchange,
+      onGetOther,
+      navigateToOther,
     } = this.action;
 
     onGiveLike((res) => {
@@ -99,6 +135,14 @@ class Detail extends Component {
         this.refresh();
       }
     });
+
+    onGetOther((res) => {
+      if(res.code === Codes.Success) {
+        navigateToOther();
+      } else {
+        MessageBox(res.content);
+      }
+    })
   }
 
   // Render
@@ -119,13 +163,16 @@ class Detail extends Component {
     }
     // const _style = styles.approvedCard;
     return (
-      <TouchableOpacity style = {{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'flex-end',
-        flexDirection: 'row',
-        marginBottom: 10,
-        }}>
+      <TouchableOpacity 
+        style = {{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'flex-end',
+          flexDirection: 'row',
+          marginBottom: 10,
+        }}
+        onPress = {this.onApprovedCardClick}
+        >
         <View style={{flex: 1}}>
           <Text style={{
             flex: 1,
@@ -198,7 +245,8 @@ class Detail extends Component {
     } = this.dependencies;
 
     let {
-      navigateToHome
+      navigateToHome,
+      navigateToOther,
     } = this.action;
 
     // console.log(`onGetPost_vendeeName item: ${JSON.stringify(item)}`)
@@ -219,7 +267,10 @@ class Detail extends Component {
               description = {element.description}
               photoUrl = {element.photoUrl}
               vendeeName = {element.vendee.name}
+              vendeeId = {element.vendee._id}
+
               navigateToHome = {navigateToHome}
+              navigateToOther = {navigateToOther}
             />
           )
         }}
@@ -265,6 +316,7 @@ class Detail extends Component {
             totalLike = {item.totalLike}
             totalItem = {item.totalItem}
             isLike = {item.isLike}
+            isSwaping = {false}
 
             navigateToExchange = {this.onCardPostExchangeClick}
             navigateToDetail = {() => {}}
@@ -339,6 +391,19 @@ const mapDispatchToProps = (dispatch) => ({
   //       next
   //     ),
   // ),
+  getOther: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    AuthAction.emit(
+        AuthActionType.emitGetOther,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
 
   onGiveLike: (
     callback = (res)=>{},
@@ -365,6 +430,16 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     ExchangeAction.on(
       ExchangeActionType.onGetItem,
+    ).inject(
+      callback
+    )
+  ),
+
+  onGetOther: (
+    callback = (res)=>{},
+  ) => dispatch(
+    AuthAction.on(
+      AuthActionType.onGetOther,
     ).inject(
       callback
     )

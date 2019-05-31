@@ -14,4 +14,6 @@ export default {
     onRegister: 'register',
     onGetInfo: 'get-info',
     emitGetInfo: 'get-info',
+    onGetOther: 'get-other',
+    emitGetOther: 'get-other',
 } 

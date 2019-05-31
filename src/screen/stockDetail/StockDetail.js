@@ -19,16 +19,35 @@ import Color from '../../constant/Color';
 import Typeface from '../../constant/Font';
 
 import styles from './StockDetail.styles';
+import AuthAction from '../../actions/Auth/AuthAction';
+import AuthActionType from '../../actions/Auth/AuthActionType';
 const {
   height,
 } = Dimensions.get(`screen`);
 class StockDetail extends Component {
   constructor (props) {
     super(props);
+
+    this.getOther = this.getOther.bind(this);
     
   }
 
   // logic
+
+  getOther () {
+    let {
+      stock,
+      token,
+    } = this.dependencies;
+    let {
+      getOther,
+    } = this.action;
+
+    getOther({
+      _id: stock.owner._id,
+      token: token,
+    })
+  }
 
   approve () {
     let {
@@ -74,8 +93,12 @@ class StockDetail extends Component {
       approve = () => {console.log(`Vừa bấm kiểm định`)},
       onBuy = () => {console.log(` Đang chờ nhận kết quả đổi quà.`)},
       onGetOne = () => {console.log(` Đang chờ nhận kết quả lấy chi tiết vật phẩm.`)},
+      getOther = () => {console.log(` Đang chờ lấy thông tin người khác.`)},
+
+      onGetOther = () => {console.log(` Đang chờ nhận thông tin người khác.`)},
       onApprove = () => {console.log(` Đang chờ nhận kết quả kiểm định chi tiết vật phẩm.`)},
       navigateToHome = () => {console.log(`Vừa bấm chuyển sang màn hình quà tặng`)},
+      navigateToOther = () => {console.log(`Vừa bấm chuyển sang màn hình thông tin người khác`)},
     } = this.props;
     return {
       buy,
@@ -84,6 +107,9 @@ class StockDetail extends Component {
       onBuy,
       onGetOne,
       onApprove,
+      getOther,
+      onGetOther,
+      navigateToOther,
     }
   }
 
@@ -107,6 +133,8 @@ class StockDetail extends Component {
       onBuy,
       onGetOne,
       onApprove,
+      onGetOther,
+      navigateToOther,
     } = this.action;
 
     onBuy((res) => {
@@ -124,6 +152,14 @@ class StockDetail extends Component {
     onApprove((res) => {
       if (res.code === Codes.Success){
         this.renew ();
+      }
+    })
+
+    onGetOther ((res) => {
+      if (res.code === Codes.Success){
+        navigateToOther();
+      } else {
+        MessageBox(res.content);
       }
     })
   }
@@ -279,7 +315,7 @@ class StockDetail extends Component {
             flex: 2,
             // borderWidth: 1,
           }}
-          onPress={()=>{}}
+          onPress={()=>{this.getOther()}}
           >
           {this.label.onwerName}
           {this.label.onwerTotalStar}
@@ -293,7 +329,8 @@ class StockDetail extends Component {
     <View  style={{
       flex: 1,
       // borderWidth: 1, 
-      flexDirection: 'row'
+      flexDirection: 'row',
+      backgroundColor: Color.LighGray,
       }}>
       {this.button.back}
       {this.label.screen}
@@ -407,6 +444,20 @@ const mapDispatchToProps = (dispatch) => ({
       ),
   ),
 
+  getOther: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    AuthAction.emit(
+        AuthActionType.emitGetOther,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
   onBuy: (
     callback = (res)=>{},
   ) => dispatch(
@@ -432,6 +483,16 @@ const mapDispatchToProps = (dispatch) => ({
   ) => dispatch(
     StockAction.on(
       StockActionType.onApprove,
+    ).inject(
+      callback
+    )
+  ),
+
+  onGetOther: (
+    callback = (res)=>{},
+  ) => dispatch(
+    AuthAction.on(
+      AuthActionType.onGetOther,
     ).inject(
       callback
     )

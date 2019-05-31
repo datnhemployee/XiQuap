@@ -34,6 +34,7 @@ import styles from './AppContainer.styles';
 import Color from '../constant/Color';
 import { ExchangeIcon, InfoIcon, PointIcon } from '../constant/Icon';
 import { Codes } from '../constant/Response';
+import Other from './other/Other';
 
 class AppContainer extends Component {
   constructor (props) {
@@ -56,6 +57,7 @@ class AppContainer extends Component {
     this.navigateToMyStock = this.navigateToMyStock.bind(this);
     this.navigateToBought = this.navigateToBought.bind(this);
     this.navigateToMyShop = this.navigateToMyShop.bind(this);
+    this.navigateToOther = this.navigateToOther.bind(this);
 
     this.onNavigateAtHome = this.onNavigateAtHome.bind(this);
   }
@@ -149,6 +151,10 @@ class AppContainer extends Component {
     this.action.navigate(Navigation.bought);
   }
 
+  navigateToOther () {
+    this.action.navigate(Navigation.other);
+  }
+
   onNavigateAtHome (page) {
     let pageIndex = {
       0: () => this.navigateToHome(),
@@ -230,6 +236,7 @@ class AppContainer extends Component {
         visible={navigation === Navigation.waitting}
         navigateToHome={this.navigateToHome}
         navigateToDetail = {this.navigateToDetail}
+        navigateToOther = {this.navigateToOther}
         />
     );
   }
@@ -360,6 +367,7 @@ class AppContainer extends Component {
         navigateToExchange = {this.navigateToExchange}
         navigateToMyShop = {this.navigateToMyShop}
         navigateToWaitting = {this.navigateToWaitting}
+        navigateToOther = {this.navigateToOther}
         />
     );
   }
@@ -436,6 +444,19 @@ class AppContainer extends Component {
     );
   }
 
+  get otherScreen () {
+    let {
+      navigation,
+    } = this.dependencies;
+    return (
+      <Other 
+        style={styles.container}
+        visible={navigation === Navigation.other}
+        navigateToHome={this.navigateToHome}
+        />
+    );
+  }
+
   get addStockScreen () {
     let {
       navigation,
@@ -458,6 +479,7 @@ class AppContainer extends Component {
         style={styles.container}
         visible={navigation === Navigation.stockDetail}
         navigateToHome={this.navigateToHome}
+        navigateToOther = {this.navigateToOther}
         />
     );
   }
@@ -522,6 +544,7 @@ class AppContainer extends Component {
         navigateToDetail={this.navigateToDetail}
         navigateToChatBox={this.navigateToChatBox}
         navigateToExchange={this.navigateToExchange}
+        navigateToOther = {this.navigateToOther}
         />
     );
   }
@@ -545,6 +568,7 @@ class AppContainer extends Component {
         {this.myStockScreen}
         {this.waittingScreen}
         {this.boughtScreen}
+        {this.otherScreen}
       </View>
     );
   }

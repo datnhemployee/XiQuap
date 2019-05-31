@@ -11,7 +11,8 @@ const connectionConfig = {
     transports: ['websocket']/// you need to explicitly tell it to use websockets
   };
 
-
+  
+// const socket = io('https://xiquap.herokuapp.com/', connectionConfig); // Dùng để kết nối server
 const socket = io('http://192.168.1.36:4000/', connectionConfig); // Dùng để kết nối server
 // const socket = io('http://192.168.150.2:3000/', connectionConfig);
 // const socket = io('http://192.168.56.1:4000', connectionConfig);

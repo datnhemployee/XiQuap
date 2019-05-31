@@ -88,7 +88,14 @@ const actions = {
         callback,
         dispatch,
     ),
-
+    [AuthActionType.onGetOther]: (
+        callback = (res) => {},
+        dispatch,
+    ) => AuthAction.onDefinition(
+            AuthActionType.onGetOther,
+            callback,
+            dispatch,
+    ),
 
     // Emit
     [AuthActionType.emitTokenLogIn]: (
@@ -147,6 +154,18 @@ const actions = {
     ) => AuthAction.emitDefinition(
         data,
         AuthActionType.emitGetInfo,
+        pre,
+        next,
+        dispatch
+    ),
+    [AuthActionType.emitGetOther]: (
+        data,
+        pre = () => {},
+        next = (res) => {},
+        dispatch,
+    ) => AuthAction.emitDefinition(
+        data,
+        AuthActionType.emitGetOther,
         pre,
         next,
         dispatch

@@ -11,4 +11,7 @@ export default {
 
     emitGetInfo: 'emit-get-info',
     onGetInfo: 'on-get-info',
+
+    emitGetOther: 'emit-get-other',
+    onGetOther: 'on-get-other',
 }

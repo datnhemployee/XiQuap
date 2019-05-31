@@ -24,6 +24,8 @@ import AuthAction from '../../actions/Auth/AuthAction';
 import AuthActionType from '../../actions/Auth/AuthActionType';
 
 class Home extends Component {
+  _isMounted = false;
+
   constructor (props) {
     super(props);
     this.state = {
@@ -57,6 +59,7 @@ class Home extends Component {
       navigateToExchange = () => {console.log(`Vừa bấm chuyển sang màn hình trao đổi`)},
       navigateToMyShop = () => {console.log(`Vừa bấm chuyển sang màn hình sạp của tôi`)},
       navigateToWaitting = () => {console.log(`Vừa bấm chuyển sang màn hình vật chờ trao đổi`)},
+      navigateToOther = () => {console.log(`Vừa bấm chuyển sang màn hình thông tin người dùng khác`)},
       
       getMore = () => {console.log(`Đang lấy thêm dữ liệu`)},
       getAllType = () => {console.log(`Đang lấy thêm toàn bộ loại vật phẩm`)},
@@ -75,6 +78,7 @@ class Home extends Component {
       navigateToExchange,
       navigateToMyShop,
       navigateToWaitting,
+      navigateToOther,
       getAllType,
 
       getMore,
@@ -87,7 +91,12 @@ class Home extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   componentDidMount () {
+    this._isMounted = true;
     let {
       onGetMore,
       onGiveLike,
@@ -98,7 +107,8 @@ class Home extends Component {
 
     this.onRefresh();
     onGetInfo(() => {
-      this.setState({});
+      if(this._isMounted)
+        this.setState({});
     })
 
     onGetMore((res)=>{
@@ -110,11 +120,12 @@ class Home extends Component {
             this.state.list.length % 5,
           );
         temp = temp.concat(this.dependencies.post.list);
-        console.log(`length: ${temp.length}`)
-        this.setState({
-          list: temp.slice(),
-          amount: temp.length,
-        });
+        // console.log(`length: ${temp.length}`)
+        if(this._isMounted)
+          this.setState({
+            list: temp.slice(),
+            amount: temp.length,
+          });
         // MessageBox(`Lấy thêm dữ liệu thành công`);
       } else {
         // MessageBox(`Đã lấy được toàn bộ dữ liệu`);
@@ -131,9 +142,10 @@ class Home extends Component {
           let returnList = this.state.list.slice();
           returnList[foundPostIndex] = temp;
           
-          this.setState({
-            list: returnList.slice(),
-          });
+          if(this._isMounted)
+            this.setState({
+              list: returnList.slice(),
+            });
         }
         
       }
@@ -160,18 +172,18 @@ class Home extends Component {
     onApproved ((res) => {
       if (res.code === Codes.Success) {
         
-        console.log(` Trả về cho người dùng ${JSON.stringify(res)}`)
-        console.log(` state.list ${JSON.stringify(this.state.list)}`)
+        // console.log(` Trả về cho người dùng ${JSON.stringify(res)}`)
+        // console.log(` state.list ${JSON.stringify(this.state.list)}`)
 
         let temp = this.dependencies.post;
-        console.log(` temp ${JSON.stringify(temp)}`)
+        // console.log(` temp ${JSON.stringify(temp)}`)
 
         let foundPostIndex = this.state.list.findIndex((val)=>val._id === temp._id);
-        console.log(` foundPostIndex ${JSON.stringify(foundPostIndex)}`)
+        // console.log(` foundPostIndex ${JSON.stringify(foundPostIndex)}`)
 
         if (foundPostIndex != -1) {
           this.state.list.splice(foundPostIndex - 1,1);
-        console.log(` state after${JSON.stringify(this.state.list)}`)
+        // console.log(` state after${JSON.stringify(this.state.list)}`)
 
           this.setState({list: this.state.list.slice()});
         }
@@ -288,6 +300,7 @@ class Home extends Component {
     let {
       navigateToExchange,
       navigateToDetail,
+      navigateToOther,
     } = this.action;
     return (
     <View style={{flex: 8}}>
@@ -314,6 +327,7 @@ class Home extends Component {
 
             navigateToExchange = {navigateToExchange}
             navigateToDetail = {navigateToDetail}
+            navigateToOther = {navigateToOther}
           />)
         }}
         showsVerticalScrollIndicator = {false}
@@ -442,6 +456,8 @@ const mapDispatchToProps = (dispatch) => ({
       callback
     )
   ),
+
+  
 
 })
 

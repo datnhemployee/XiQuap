@@ -4,96 +4,98 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Modal,
 } from 'react-native';
 
 import AuthAction from '../../actions/Auth/AuthAction';
 import AuthActionType from '../../actions/Auth/AuthActionType';
-import styles from './Info.styles';
+import styles from './Other.styles';
 
 import { connect } from 'react-redux';
+import { BackIcon } from '../../constant/Icon';
+import Color from '../../constant/Color';
 
-class Info extends Component {
-    _isMounted = false;
-    constructor (props) {
+class Other extends Component {
+  constructor (props) {
     super(props);
     
   }
 
   get action () {
     let {
-      onGetInfo = () => console.log(` Đang chờ dợi thông tin cá nhân của người dùng.`),
+      onGetOther = () => console.log(` Đang chờ dợi thông tin cá nhân của người dùng.`),
+      navigateToHome = () => console.log(`Chuyển sang màn hình chính.`),
     } = this.props;
     return {
-      onGetInfo,
+      onGetOther,
+      navigateToHome,
     }
   }
 
   get dependencies () {
     let {
       visible = false,
-      user = null,
+      other= null,
     } = this.props;
     return {
       visible,
-      user,
+      other,
     };
   }
 
-  componentWillMount () {
-    this._isMounted = false;
-  }
-
   componentDidMount () {
-    this._isMounted = true;
     let {
-      onGetInfo,
+      onGetOther,
     } = this.action;
 
-    onGetInfo ((res) => {
+    onGetOther ((res) => {
       this.renew();
     })
   }
 
   renew () {
-    if(this._isMounted)
-      this.setState({});
+    this.setState({});
   }
 
   get errorView () {
     return (<Text>Lỗi hiển thị</Text>);
   }
 
-  get lable () {
+  get label () {
     let {
-      user,
+      other,
     } = this.dependencies;
 
+    const screen = (<Text style={styles.label.screen}>Người dùng</Text>)
+
     const _style = styles.label;
-    return !user? {
+    return !other? {
       name: errorView,
       followers: errorView,
       star: errorView,
       email: errorView,
       phone: errorView,
       address: errorView,
+      screen: screen,
     } : {
-      name: (<Text style={_style.name}>{user.name}</Text>),
-      followers: (<Text style={_style.followers}>{user.totalFollowers} người theo dõi</Text>),
-      star: (<Text style={_style.star}>{user.totalStar} sao</Text>),
-      email: (<Text style={_style.email}>email: {user.email}</Text>),
-      phone: (<Text style={_style.phone}>Điện thoại: {user.phone}</Text>),
-      address: (<Text style={_style.address}>Địa chỉ: {user.address}</Text>),
+      name: (<Text style={_style.name}>{other.name}</Text>),
+      followers: (<Text style={_style.followers}>{other.totalFollowers} người theo dõi</Text>),
+      star: (<Text style={_style.star}>{other.totalStar} sao</Text>),
+      email: (<Text style={_style.email}>email: {other.email}</Text>),
+      phone: (<Text style={_style.phone}>Điện thoại: {other.phone}</Text>),
+      address: (<Text style={_style.address}>Địa chỉ: {other.address}</Text>),
+      screen: screen,
     }
   }
 
   get image () {
     let {
       avatar,
-    } = this.dependencies.user;
+    } = this.dependencies.other;
     return {
       avatar: (
       <View style={{
-        flex: 1,
+        flex: 3,
         borderRadius: 10,
         overflow: 'hidden',
       }}>
@@ -112,26 +114,31 @@ class Info extends Component {
   }
 
   get button () {
+    const {
+      navigateToHome,
+    } = this.action;
     const _style = styles.button;
     return {
-      favorite: (
+      back: (
       <TouchableOpacity
-        style={_style.favorite}>
-        <Text style={_style.favoriteText}>ƯU THÍCH</Text>
+        onPress = {() => navigateToHome()}
+        style={_style.back}>
+        <BackIcon 
+          color={Color.Gray}/>
+        
       </TouchableOpacity>
       ),
-      account: (
-        <TouchableOpacity
-          style={_style.account}>
-          <Text style={_style.accountText}>SỬA</Text>
-        </TouchableOpacity>
-        ),
+      
     }
   }
 
   get header () {
     return (
-      <View style={{flex: 3}}>
+      <View style={{flex: 4}}>
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          {this.button.back}
+          {this.label.screen}
+        </View>
         {this.image.avatar}
       </View>
     )
@@ -140,22 +147,19 @@ class Info extends Component {
   get body () {
     return (
       <View style={{flex: 5}}>
-        {this.lable.star}
-        {this.lable.name}
-        {this.lable.followers}
-        {this.lable.email}
-        {this.lable.phone}
-        {this.lable.address}
+        {this.label.star}
+        {this.label.name}
+        {this.label.followers}
+        {this.label.email}
+        {this.label.phone}
+        {this.label.address}
       </View>
     )
   }
 
   get footer () {
     return (
-      <View style={{flex: 1, flexDirection: "row"}}>
-        {this.button.favorite}
-        {this.button.account}
-      </View>
+      <View />
     )
   }
   
@@ -170,10 +174,19 @@ class Info extends Component {
   }
 
   render() {
+    let {
+      visible,
+    } = this.dependencies;
     return (
-      <View style={{flex: 1}}>
-          {this.form}
-      </View>
+      <Modal
+        animationType="fade"
+        transparent={false}
+        visible={visible}
+        onRequestClose={()=>{}}
+        onShow = {() => {this.renew()}}
+        >
+        {this.form}
+      </Modal>
     );
   }
 }
@@ -184,16 +197,16 @@ const mapStateToProps = (state) => {
 
   return {
     token: state.auth.token,
-    user: state.user,
+    other: state.other,
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onGetInfo: (
+  onGetOther: (
     callback = (res)=>{},
   ) => dispatch(
     AuthAction.on(
-      AuthActionType.onGetInfo,
+      AuthActionType.onGetOther,
     ).inject(
       callback
     )
@@ -203,4 +216,4 @@ const mapDispatchToProps = (dispatch) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Info);
+)(Other);

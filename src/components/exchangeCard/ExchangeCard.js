@@ -16,14 +16,35 @@ import { connect } from 'react-redux';
 import Typeface from '../../constant/Font';
 import { ExchangeIcon, SwapIcon } from '../../constant/Icon';
 import Color from '../../constant/Color';
+import AuthAction from '../../actions/Auth/AuthAction';
+import AuthActionType from '../../actions/Auth/AuthActionType';
+import { Codes } from '../../constant/Response';
+import MessageBox from '../MessageBox';
 
 class ExchangeCard extends Component {
   constructor (props) {
     super(props);
     
+    this.getOther = this.getOther.bind(this);
   }
 
   // logic
+
+  getOther () {
+    let {
+      vendeeId,
+      token,
+    } = this.dependencies;
+
+    let {
+      getOther,
+    } = this.action;
+
+    getOther({
+      _id: vendeeId,
+      token,
+    })
+  }
 
   approve () {
     let {
@@ -48,11 +69,36 @@ class ExchangeCard extends Component {
     let {
       approve = () => {console.log(`Vừa bấm đồng ý trao đổi`)},
       navigateToHome = () => {console.log(`Vừa bấm chuyển sang màn hình Home`)},
+      navigateToOther = () => {console.log(`Vừa bấm chuyển sang màn hình thành viên khác`)},
+
+      getOther = () => {console.log(`Lấy thông tin thành viên khác`)},
+      onGetOther = () => {console.log(`Lấy thông tin thành viên khác`)},
+
     } = this.props;
     return {
       approve,
       navigateToHome,
+      navigateToOther,
+
+      getOther,
+      onGetOther,
     }
+  }
+
+  componentDidMount () {
+    let {
+      onGetOther,
+      navigateToOther,
+    } = this.action;
+
+    onGetOther(
+      (res) => {
+        if(res.code === Codes.Success) {
+          navigateToOther();
+        } else {
+          MessageBox(res.content);
+        }
+    })
   }
 
   get dependencies () {
@@ -64,6 +110,7 @@ class ExchangeCard extends Component {
       description = '',
       photoUrl = '',
       vendeeName = '',
+      vendeeId = '',
       idItem = '',
 
       token = '',
@@ -76,6 +123,7 @@ class ExchangeCard extends Component {
       description,
       photoUrl,
       vendeeName,
+      vendeeId,
       idItem,
 
       token,
@@ -87,8 +135,6 @@ class ExchangeCard extends Component {
   approveButton_onClick () {
     this.approve();
   }
-
-
 
   contactButton_onClick () {
     let {
@@ -154,7 +200,7 @@ class ExchangeCard extends Component {
           style={{flex: 1,
             // borderWidth: 1
           }}
-          onPress={()=>{}}
+          onPress={this.getOther}
           >
           {this.label.vendeeName}
         </TouchableOpacity>
@@ -260,8 +306,29 @@ const mapDispatchToProps = (dispatch) => ({
       ),
   ),
 
-  // Chỉ có thể emit ở component
-  // on sẽ ở screen
+  getOther: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    AuthAction.emit(
+        AuthActionType.emitGetOther,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
+  onGetOther: (
+    callback = (res)=>{},
+  ) => dispatch(
+    AuthAction.on(
+      AuthActionType.onGetOther,
+    ).inject(
+      callback
+    )
+  ),
 
 })
 

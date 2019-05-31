@@ -41,6 +41,7 @@ export const openFromLibrary = (
       try {
         // let getResult = await Axios.get('http://192.168.1.36:4000/');
         // console.log(`tui đang lấy dữ liệu nè: `,JSON.stringify(getResult.data));
+        // let response = await Axios.post(`https://xiquap.herokuapp.com/`,
         let response = await Axios.post(`http://192.168.1.36:4000/image`,
           createFormData(res));
 

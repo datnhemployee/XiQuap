@@ -15,4 +15,5 @@ export default {
     waitting: 14,
     myShop: 15,
     bought: 16,
+    other: 17,
 }

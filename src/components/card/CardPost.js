@@ -16,11 +16,16 @@ import { options } from '../../services/API/PostDocument';
 import Color from '../../constant/Color';
 import styles from './CardPost.styles';
 import { SwapIcon, HeartoIcon, HeartIcon } from '../../constant/Icon';
+import AuthAction from '../../actions/Auth/AuthAction';
+import AuthActionType from '../../actions/Auth/AuthActionType';
+import { Codes } from '../../constant/Response';
+import MessageBox from '../MessageBox';
 
 class CardPost extends Component {
   constructor (props) {
     super(props);
     
+    this.onOtherButtonClick = this.onOtherButtonClick.bind(this);
   }
 
   // logic
@@ -39,23 +44,61 @@ class CardPost extends Component {
     });
   }
 
+  onOtherButtonClick () {
+    let {
+      getOther,
+    } = this.action;
+    let {
+      ownerId,
+      token,
+    } = this.dependencies;
+
+    getOther ({
+      _id: ownerId,
+      token,
+    });
+  }
+
   get action () {
     let {
       navigateToDetail = () => {console.log(`Vừa bấm chuyển sang màn hình chi tiết`)},
       navigateToExchange = () => {console.log(`Vừa bấm chuyển sang màn hình trao đổi`)},
       navigateToChatBox = () => {console.log(`Vừa bấm chuyển sang màn hình nói chuyện`)},
+      navigateToOther = () => {console.log(`Vừa bấm chuyển sang màn hình người dùng khác`)},
       
       giveLike = () => {console.log(`Vừa bấm thích bài viết`)},
+      getOther = () => {console.log(`Vừa bấm lấy thông tin người khác`)},
+      onGetOther = () => {console.log(`Vừa bấm lấy thông tin người khác`)},
       getItem = () => {console.log(`Vừa bấm lấy thông tin chi tiết vật phẩm`)},
     } = this.props;
     return {
       navigateToDetail,
       navigateToExchange,
       navigateToChatBox,
+      navigateToOther,
       
       giveLike,
       getItem,
+      getOther,
+      onGetOther,
     }
+  }
+
+  componentDidMount () {
+    const {
+      onGetOther,
+      navigateToOther,
+    } = this.action;
+
+    onGetOther(
+      (res) => {
+        console.log(`res là: `,JSON.stringify(res));
+        if(res.code === Codes.Success)
+          navigateToOther();
+        else {
+          MessageBox(`Lỗi`,res.content);
+        }
+      });
   }
 
   get dependencies () {
@@ -73,6 +116,7 @@ class CardPost extends Component {
       totalItem = 0,
       isBrief = true,
       isLike = false,
+      isSwaping = true,
 
       token = '',
     } = this.props;
@@ -91,6 +135,7 @@ class CardPost extends Component {
       totalItem,
       isBrief,
       isLike,
+      isSwaping,
 
       token,
     };
@@ -231,10 +276,12 @@ class CardPost extends Component {
     const {
       isLike,
     } = this.dependencies;
+    
     const _style = styles.button;
     return {
       info: (
         <TouchableOpacity 
+          onPress = {this.onOtherButtonClick}
           style={_style.info}>
           {this.image.ownerAvatar}
           {this.label.ownerName}
@@ -305,10 +352,13 @@ class CardPost extends Component {
   }
 
   get footer () {
+    let {
+      isSwaping
+    } = this.dependencies;
     return (
     <View style={styles.footer}>
       {this.button.like}
-      {this.button.exchange}
+      {!!isSwaping?this.button.exchange:(<View/>)}
     </View>)
   }
   get form () {
@@ -359,6 +409,20 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
   
+  getOther: (
+    data,
+    pre = () => {},
+    next = (res) => {},
+  ) => dispatch(
+    AuthAction.emit(
+        AuthActionType.emitGetOther,
+      ).inject(
+        data,
+        pre,
+        next
+      ),
+  ),
+
   getItem: (
     data,
     pre = () => {},
@@ -387,8 +451,15 @@ const mapDispatchToProps = (dispatch) => ({
       ),
   ),
 
-  // Chỉ có thể emit ở component
-  // on sẽ ở screen
+  onGetOther: (
+    callback = (res)=>{},
+  ) => dispatch(
+    AuthAction.on(
+      AuthActionType.onGetOther,
+    ).inject(
+      callback
+    )
+  ),
 
 })
 
